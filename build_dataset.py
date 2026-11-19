@@ -41,6 +41,32 @@ if not m:
 quadro = json.loads(m.group(1))
 print(f"quadro registros: {len(quadro)}")
 
+# ---------- 1b. Posses posteriores ao snapshot do Quadro ----------
+# Quem tomou posse depois da captura oficial do Quadro Geral (18/11/2026) nao aparece
+# nas telas baixadas. O overlay preenche o cargo que estava VAGO no municipio.
+# Fonte: DOE MPPE de 19/11/2026, pp. 6-8 (portarias PGJ 3.947 a 3.957/2026).
+POSSE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "posse_2026-11-19.json")
+if os.path.exists(POSSE):
+    posses = json.load(open(POSSE, encoding="utf-8"))
+    usados = set()
+    for p in posses:
+        alvo = next((i for i, r in enumerate(quadro)
+                     if i not in usados
+                     and fold(r.get("municipio")) == fold(p["municipio"])
+                     and norm_name(r.get("promotor")) == "VAGO"), None)
+        if alvo is None:
+            sys.exit(f"ERRO overlay: cargo vago nao encontrado em {p['municipio']} para {p['nome']}")
+        quadro[alvo] = dict(quadro[alvo], promotor=p["nome"], causa="Nomeação")
+        usados.add(alvo)
+    print(f"posses aplicadas (overlay): {len(posses)}")
+else:
+    posses = []
+    print(f"aviso: overlay de posse ausente ({POSSE})")
+
+# Quem empossou agora nao consta do AMPPE (ago/2026) nem do export de e-mails (jan/2026):
+# tentar casar por nome so gera homonimo falso. Ficam sem contato ate a fonte oficial trazer.
+POSSE_NOMES = {norm_name(p["nome"]) for p in posses}
+
 cargos_vagos = [r for r in quadro if norm_name(r.get("promotor")) == "VAGO"]
 print(f"vagos: {len(cargos_vagos)} / ocupados: {len(quadro) - len(cargos_vagos)}")
 
@@ -199,8 +225,8 @@ for nome, p in people.items():
     cargos = sorted(p["cargos"], key=cargo_rank)
     principal = cargos[0]
     fone, fonte_fone, wa, suspeito = "", "", "", False
-    c_am = best_match(nome, amppe)
-    c_co = best_match(nome, correg)
+    c_am = best_match(nome, amppe) if nome not in POSSE_NOMES else (None, 0)
+    c_co = best_match(nome, correg) if nome not in POSSE_NOMES else (None, 0)
 
     am_ok = c_am[0] and c_am[1] >= 2
     if am_ok:
@@ -228,7 +254,7 @@ for nome, p in people.items():
         matr = ""
 
     email, email_row = "", ""
-    c_em = best_match(nome, emails)
+    c_em = best_match(nome, emails) if nome not in POSSE_NOMES else (None, 0)
     if c_em[0] and c_em[1] >= 2:
         email = emails[c_em[0]]["email"]
         email_row = emails[c_em[0]]["nome"]
