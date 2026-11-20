@@ -131,6 +131,36 @@ with sync_playwright() as p:
     esperado_wa = "wa.me/55" + re.sub(r"\D", "", primeiro["telefone"])
     check(re.sub(r"\D", "", wa)[-11:] == re.sub(r"\D", "", esperado_wa)[-11:], f"href WhatsApp = {wa}")
 
+    # 5c. carreira e antiguidade na sheet (valores lidos do dataset)
+    def txt(sel):
+        return page.evaluate("(s) => { const e = document.querySelector(s); return e ? e.textContent.trim() : ''; }", sel)
+
+    if primeiro.get("posicaoAntiguidade"):
+        ant = txt("#sheet-antiguidade")
+        check(str(primeiro["posicaoAntiguidade"]) + "º" in ant, f"antiguidade na sheet: {ant!r}")
+        check(primeiro.get("listaAntiguidade", "") in ant, f"lista de antiguidade citada: {ant!r}")
+    if primeiro.get("nascimento"):
+        nasc = txt("#sheet-nascimento")
+        check(nasc.startswith(primeiro["nascimento"]), f"nascimento na sheet: {nasc.splitlines()[0]!r}")
+        check("anos" in nasc, f"idade calculada ao lado do nascimento: {nasc.splitlines()[-1]!r}")
+    if primeiro.get("ingressoMP"):
+        mp = txt("#sheet-ingresso-mp")
+        check(mp.startswith(primeiro["ingressoMP"]), f"ingresso no MP na sheet: {mp.splitlines()[0]!r}")
+        check("de MP" in mp, f"tempo de MP calculado: {mp.splitlines()[-1]!r}")
+    if primeiro.get("ingressoEntrancia"):
+        ent = txt("#sheet-ingresso-entrancia")
+        check(ent.startswith(primeiro["ingressoEntrancia"]), f"ingresso na entrância: {ent.splitlines()[0]!r}")
+    if primeiro.get("inicioCargo"):
+        cargo = txt("#sheet-inicio-cargo")
+        check(cargo.startswith(primeiro["inicioCargo"]), f"início no cargo: {cargo.splitlines()[0]!r}")
+        if primeiro.get("portaria"):
+            check("Portaria " + primeiro["portaria"] in cargo, f"portaria do último provimento: {cargo!r}")
+    check(txt("#sheet-carreira-note").strip() != "", f"nota da fonte de antiguidade: {txt('#sheet-carreira-note')!r}")
+
+    # 5d. avatar na lista (foto ou iniciais)
+    avatar_html = page.evaluate("() => { const a = document.querySelector('.member-row .row-avatar'); return a ? a.innerHTML : ''; }")
+    check(avatar_html.strip() != "", f"avatar na linha da lista: {avatar_html[:60]!r}")
+
     # 6. foto: upload + persistência
     test_img = "/tmp/test_photo.jpg"
     subprocess.run([sys.executable if False else "python3", "-c", f"""

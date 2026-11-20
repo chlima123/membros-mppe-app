@@ -477,7 +477,7 @@
       content: "";
       position: absolute;
       top: 0;
-      left: 14px;
+      left: 62px;
       right: 0;
       height: 0.5px;
       background: var(--separator);
@@ -494,6 +494,32 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
+    }
+
+    /* Avatar 1:1 na lista (foto do membro; iniciais quando não há foto) */
+    .row-avatar {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--row-active);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text-tertiary);
+      user-select: none;
+    }
+
+    .row-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: var(--row-active);
     }
 
     .row-name {
@@ -844,6 +870,13 @@
       margin: 0;
     }
 
+    .card-note {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-tertiary);
+    }
+
     .info-rows {
       display: flex;
       flex-direction: column;
@@ -874,6 +907,40 @@
       color: var(--text);
       text-align: right;
       word-break: break-word;
+    }
+
+    /* Data principal + complemento (idade, tempo de casa, ato) */
+    .info-val .info-main {
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .info-val .info-sub {
+      display: block;
+      margin-top: 2px;
+      font-size: 12.5px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .info-val.is-empty {
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+
+    .badge-antiguidade {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .badge-antiguidade strong {
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
     }
 
     .atuacao-text {
@@ -1220,6 +1287,33 @@
             </div>
           </div>
 
+          <div class="sheet-card" id="sheet-carreira-card">
+            <p class="card-label">Carreira e antiguidade</p>
+            <div class="info-rows">
+              <div class="info-row">
+                <span class="info-key">Antiguidade</span>
+                <span class="info-val" id="sheet-antiguidade"></span>
+              </div>
+              <div class="info-row">
+                <span class="info-key">Nascimento</span>
+                <span class="info-val" id="sheet-nascimento"></span>
+              </div>
+              <div class="info-row">
+                <span class="info-key">Ingresso no MP</span>
+                <span class="info-val" id="sheet-ingresso-mp"></span>
+              </div>
+              <div class="info-row">
+                <span class="info-key">Ingresso na entrância</span>
+                <span class="info-val" id="sheet-ingresso-entrancia"></span>
+              </div>
+              <div class="info-row">
+                <span class="info-key">Início no cargo atual</span>
+                <span class="info-val" id="sheet-inicio-cargo"></span>
+              </div>
+            </div>
+            <p class="card-note" id="sheet-carreira-note" hidden></p>
+          </div>
+
           <div class="sheet-card" id="sheet-atuacao-card" hidden>
             <p class="card-label">Atuação</p>
             <p class="atuacao-text" id="sheet-atuacao"></p>
@@ -1320,6 +1414,16 @@ const DATA = __DATA_JSON__;
     return first >= 'A' && first <= 'Z' ? first : '#';
   }
 
+  // iniciais para o avatar sem foto: primeiro + último sobrenome
+  function initials(nome) {
+    const parts = String(nome || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    const first = parts[0].charAt(0);
+    const last = parts[parts.length - 1].charAt(0);
+    return (first + last).toUpperCase();
+  }
+
   // Telefone exibido no padrao local: 0 + DDD + numero (ex.: 081 994324196)
   function phoneDigits(phone) {
     let digits = String(phone || '').replace(/\D/g, '');
@@ -1339,6 +1443,93 @@ const DATA = __DATA_JSON__;
     if (!digits) return '';
     return 'tel:' + (digits.length <= 11 ? '+55' + digits : '+' + digits);
   }
+
+  // --- Datas funcionais (nascimento, ingresso, antiguidade) ---
+  function parseBRDate(value) {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value || '').trim());
+    if (!m) return null;
+    const dt = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+
+  function yearsBetween(from, to) {
+    let years = to.getFullYear() - from.getFullYear();
+    const beforeAnniversary =
+      to.getMonth() < from.getMonth() ||
+      (to.getMonth() === from.getMonth() && to.getDate() < from.getDate());
+    if (beforeAnniversary) years -= 1;
+    return years;
+  }
+
+  function idadeLabel(value) {
+    const dt = parseBRDate(value);
+    if (!dt) return '';
+    const years = yearsBetween(dt, new Date());
+    return years >= 0 ? years + (years === 1 ? ' ano' : ' anos') : '';
+  }
+
+  function tempoLabel(value) {
+    const dt = parseBRDate(value);
+    if (!dt) return '';
+    const now = new Date();
+    const years = yearsBetween(dt, now);
+    if (years < 0) return '';
+    let months = now.getMonth() - dt.getMonth();
+    if (now.getDate() < dt.getDate()) months -= 1;
+    if (months < 0) months += 12;
+    if (years === 0) return months + (months === 1 ? ' mês' : ' meses');
+    const parts = [years + (years === 1 ? ' ano' : ' anos')];
+    if (months > 0) parts.push(months + (months === 1 ? ' mês' : ' meses'));
+    return parts.join(' e ');
+  }
+
+  function ordinalLabel(n) {
+    return n ? n + 'º' : '';
+  }
+
+  // value -> { main, sub } ; aceita complemento calculado
+  function setInfoValue(el, value, sub) {
+    if (!el) return;
+    if (!value) {
+      el.textContent = 'não informado';
+      el.classList.add('is-empty');
+      return;
+    }
+    el.classList.remove('is-empty');
+    el.textContent = '';
+    const main = document.createElement('span');
+    main.className = 'info-main';
+    main.textContent = value;
+    el.appendChild(main);
+    if (sub) {
+      const s = document.createElement('span');
+      s.className = 'info-sub';
+      s.textContent = sub;
+      el.appendChild(s);
+    }
+  }
+
+  function setAntiguidade(el, m) {
+    if (!el) return;
+    const pos = Number(m.posicaoAntiguidade || 0);
+    if (!pos) {
+      el.textContent = 'não informado';
+      el.classList.add('is-empty');
+      return;
+    }
+    el.classList.remove('is-empty');
+    el.textContent = '';
+    const wrap = document.createElement('span');
+    wrap.className = 'badge-antiguidade';
+    const strong = document.createElement('strong');
+    strong.textContent = ordinalLabel(pos);
+    wrap.appendChild(strong);
+    const rest = document.createElement('span');
+    rest.textContent = 'na ' + (m.listaAntiguidade || 'lista');
+    wrap.appendChild(rest);
+    el.appendChild(wrap);
+  }
+
 
   function escapeHtml(str) {
     return String(str || '')
@@ -1408,6 +1599,13 @@ const DATA = __DATA_JSON__;
   const photoImg = document.getElementById('photo-img');
   const photoInput = document.getElementById('photo-input');
   const btnRemovePhoto = document.getElementById('btn-remove-photo');
+
+  const sheetAntiguidade = document.getElementById('sheet-antiguidade');
+  const sheetNascimento = document.getElementById('sheet-nascimento');
+  const sheetIngressoMP = document.getElementById('sheet-ingresso-mp');
+  const sheetIngressoEntrancia = document.getElementById('sheet-ingresso-entrancia');
+  const sheetInicioCargo = document.getElementById('sheet-inicio-cargo');
+  const sheetCarreiraNote = document.getElementById('sheet-carreira-note');
 
   const sheetName = document.getElementById('sheet-name');
   const sheetCargo = document.getElementById('sheet-cargo');
@@ -1796,8 +1994,13 @@ const DATA = __DATA_JSON__;
         );
       }
       const meta = item.cargo + (item.promotoria ? ' · ' + item.promotoria : '');
+      const foto = String(item.raw.foto || '').trim();
+      const avatar = foto
+        ? '<span class="row-avatar"><img src="./' + escapeHtml(foto) + '" alt="" loading="lazy" decoding="async"></span>'
+        : '<span class="row-avatar" aria-hidden="true">' + escapeHtml(initials(item.nome)) + '</span>';
       htmlParts.push(
         '<button type="button" class="member-row" data-id="' + escapeHtml(item.id) + '">' +
+          avatar +
           '<span class="row-main">' +
             '<span class="row-name">' + escapeHtml(item.nome) + '</span>' +
             '<span class="row-meta">' + escapeHtml(meta) + '</span>' +
@@ -1814,6 +2017,8 @@ const DATA = __DATA_JSON__;
         'Quadro Geral de Membros do MPPE — retrato de <strong>18/11/2026</strong>, ' +
         'com as posses de 19/11/2026 (' + TOTAL + ' cargos ocupados; 79 vagos não entram). ' +
         'Telefones: AMPPE 2026 / Corregedoria-Geral. E-mails: diretório de usuários de 30/01/2026. ' +
+        'Nascimento e antiguidade: listas do CSMP com data-base 14/10/2026. ' +
+        'Início no cargo: data do último provimento no Quadro Geral. ' +
         'Confirme o dado antes de usar.' +
       '</footer>'
     );
@@ -1890,14 +2095,16 @@ const DATA = __DATA_JSON__;
   let currentMember = null;
   let lastTriggerEl = null;
 
-  function setPhotoUI(dataUrl, memberName) {
+  // dataUrl: imagem a exibir; source: 'arquivo' (foto do dataset) | 'usuario' (IndexedDB)
+  function setPhotoUI(dataUrl, memberName, source) {
     if (dataUrl) {
       photoImg.src = dataUrl;
       photoImg.alt = 'Foto de ' + memberName;
       photoImg.hidden = false;
       photoPlaceholder.hidden = true;
       photoBox.classList.add('has-photo');
-      btnRemovePhoto.hidden = false;
+      btnRemovePhoto.hidden = source !== 'usuario';
+      photoBox.setAttribute('aria-label', 'Foto de ' + memberName + '. Toque para usar outra foto.');
     } else {
       photoImg.removeAttribute('src');
       photoImg.alt = '';
@@ -1905,6 +2112,7 @@ const DATA = __DATA_JSON__;
       photoPlaceholder.hidden = false;
       photoBox.classList.remove('has-photo');
       btnRemovePhoto.hidden = true;
+      photoBox.setAttribute('aria-label', 'Adicionar foto');
     }
   }
 
@@ -1927,6 +2135,37 @@ const DATA = __DATA_JSON__;
     } else {
       sheetAtuacao.textContent = '';
       sheetAtuacaoCard.hidden = true;
+    }
+
+    // --- Carreira e antiguidade ---
+    setAntiguidade(sheetAntiguidade, m);
+    const nasc = String(m.nascimento || '').trim();
+    setInfoValue(sheetNascimento, nasc, idadeLabel(nasc));
+    const ingMP = String(m.ingressoMP || '').trim();
+    const tempoMP = tempoLabel(ingMP);
+    setInfoValue(sheetIngressoMP, ingMP, tempoMP ? tempoMP + ' de MP' : '');
+    const ingEnt = String(m.ingressoEntrancia || '').trim();
+    const tempoEnt = tempoLabel(ingEnt);
+    setInfoValue(sheetIngressoEntrancia, ingEnt, tempoEnt ? tempoEnt + ' na entrância' : '');
+    const inicioCargo = String(m.inicioCargo || '').trim();
+    const ato = String(m.ato || '').trim();
+    const portaria = String(m.portaria || '').trim();
+    const cargoSub = [ato, portaria ? 'Portaria ' + portaria : ''].filter(Boolean).join(' · ');
+    setInfoValue(sheetInicioCargo, inicioCargo, cargoSub);
+
+    const notaPartes = [];
+    if (m.listaAntiguidade) {
+      notaPartes.push('Lista de antiguidade do CSMP — data-base 14/10/2026 (' + m.listaAntiguidade + ').');
+    }
+    if (!m.posicaoAntiguidade && m.entrancia !== '-') {
+      notaPartes.push('Sem posição na lista: membro empossado depois da data-base.');
+    }
+    if (notaPartes.length > 0) {
+      sheetCarreiraNote.textContent = notaPartes.join(' ');
+      sheetCarreiraNote.hidden = false;
+    } else {
+      sheetCarreiraNote.textContent = '';
+      sheetCarreiraNote.hidden = true;
     }
 
     const phone = String(m.telefone || '').trim();
@@ -1975,12 +2214,14 @@ const DATA = __DATA_JSON__;
       sheetFooter.hidden = true;
     }
 
-    // Reset photo placeholder immediately, then load cached photo from IndexedDB
-    setPhotoUI(null, item.nome);
+    // Foto: arquivo do dataset primeiro; se o usuário tem foto própria salva, ela vence
+    const fotoArquivo = String(m.foto || '').trim();
+    const fotoUrl = fotoArquivo ? './' + fotoArquivo : '';
+    setPhotoUI(fotoUrl || null, item.nome, fotoUrl ? 'arquivo' : null);
     const requestedId = item.id;
     getPhoto(requestedId).then(function (saved) {
       if (currentMember && currentMember.id === requestedId && saved) {
-        setPhotoUI(saved, item.nome);
+        setPhotoUI(saved, item.nome, 'usuario');
       }
     });
 
@@ -2078,7 +2319,7 @@ const DATA = __DATA_JSON__;
       const dataUrl = await resizePhotoTo3x4(file);
       await savePhoto(targetMember.id, dataUrl);
       if (currentMember && currentMember.id === targetMember.id) {
-        setPhotoUI(dataUrl, targetMember.nome);
+        setPhotoUI(dataUrl, targetMember.nome, 'usuario');
       }
       showToast('Foto salva');
     } catch (_) {
@@ -2094,7 +2335,9 @@ const DATA = __DATA_JSON__;
     try {
       await deletePhoto(targetMember.id);
       if (currentMember && currentMember.id === targetMember.id) {
-        setPhotoUI(null, targetMember.nome);
+        const fotoArquivo = String(targetMember.raw.foto || '').trim();
+        setPhotoUI(fotoArquivo ? './' + fotoArquivo : null, targetMember.nome,
+          fotoArquivo ? 'arquivo' : null);
       }
       showToast('Foto removida');
     } catch (_) {
