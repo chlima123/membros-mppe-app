@@ -57,9 +57,13 @@ Fatos verificados (use como teste, **não digite esses números no código**; le
    ordenado, opção "Todos os municípios"). Botão `Limpar` quando houver filtro/busca ativos.
 4. **Detalhe**: ao tocar na linha, abre uma **bottom sheet** (não navegação de página) com:
    - **foto 3:4** — caixa com `aspect-ratio: 3 / 4`, cantos arredondados, placeholder com ícone e
-     texto "Adicionar foto". Toque abre seletor de arquivo (`accept="image/*"`); a imagem é
-     **redimensionada para 480x640 (cover)** e guardada em **IndexedDB** com chave = `id` do membro;
-     persiste após fechar/reabrir o app; botão discreto "remover foto". Precisa funcionar offline.
+     texto "Adicionar foto". Se o membro tem **foto do acervo** (`foto` no dataset →
+     `fotos/<id>.jpg`, quadrada 400x400), ela aparece primeiro. Toque abre seletor de arquivo
+     (`accept="image/*"`); a imagem escolhida é **redimensionada para 480x640 (cover)** e guardada
+     em **IndexedDB** com chave = `id` do membro, vencendo a do acervo; persiste após
+     fechar/reabrir o app; botão discreto "remover foto". Precisa funcionar offline.
+   - A lista mostra **avatar circular** por linha: foto do acervo quando existe, senão as iniciais
+     (primeiro + último sobrenome). Se o arquivo da foto falhar, o avatar volta para as iniciais.
    - Nome completo (tipografia grande), cargo, promotoria + circunscrição, entrância.
    - `atuação` (texto do campo `atuacao`) em bloco secundário, só se não estiver vazio.
    - **Telefone** exibido no padrão local `0DDD NNNNNNNN` (ex.: `081 994324196`) com botão

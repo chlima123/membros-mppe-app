@@ -1541,6 +1541,9 @@ const DATA = __DATA_JSON__;
 
   // --- Prepare indexed dataset ---
   const TOTAL = Array.isArray(DATA) ? DATA.length : 0;
+  const COM_FOTO = Array.isArray(DATA)
+    ? DATA.filter(function (d) { return String((d && d.foto) || '').trim() !== ''; }).length
+    : 0;
   const membersById = new Map();
 
   const INDEXED = (Array.isArray(DATA) ? DATA : [])
@@ -1584,6 +1587,20 @@ const DATA = __DATA_JSON__;
   const chipsContainer = document.getElementById('entrancia-chips');
   const citySelect = document.getElementById('city-select');
   const listContainer = document.getElementById('list-container');
+
+  // Fallback do avatar: se a foto do acervo não carregar (offline/404), volta para as iniciais.
+  // Eventos 'error' de <img> não borbulham, mas são capturados na fase de captura.
+  listContainer.addEventListener(
+    'error',
+    function (ev) {
+      const alvo = ev.target;
+      if (!alvo || alvo.tagName !== 'IMG') return;
+      const caixa = alvo.parentNode;
+      if (!caixa || !caixa.classList || !caixa.classList.contains('row-avatar')) return;
+      caixa.textContent = caixa.getAttribute('data-initials') || '';
+    },
+    true
+  );
 
   const sheetRoot = document.getElementById('sheet-root');
   const sheetScrim = document.getElementById('sheet-scrim');
@@ -1995,8 +2012,12 @@ const DATA = __DATA_JSON__;
       }
       const meta = item.cargo + (item.promotoria ? ' · ' + item.promotoria : '');
       const foto = String(item.raw.foto || '').trim();
+      // Foto do acervo quando existe; senão iniciais. Se o arquivo falhar (offline/404),
+      // o handler de erro da lista troca o <img> pelas iniciais (data-initials).
       const avatar = foto
-        ? '<span class="row-avatar"><img src="./' + escapeHtml(foto) + '" alt="" loading="lazy" decoding="async"></span>'
+        ? '<span class="row-avatar" aria-hidden="true" data-initials="' + escapeHtml(initials(item.nome)) + '">' +
+            '<img src="./' + escapeHtml(foto) + '" alt="" loading="lazy" decoding="async">' +
+          '</span>'
         : '<span class="row-avatar" aria-hidden="true">' + escapeHtml(initials(item.nome)) + '</span>';
       htmlParts.push(
         '<button type="button" class="member-row" data-id="' + escapeHtml(item.id) + '">' +
@@ -2019,6 +2040,7 @@ const DATA = __DATA_JSON__;
         'Telefones: AMPPE 2026 / Corregedoria-Geral. E-mails: diretório de usuários de 30/01/2026. ' +
         'Nascimento e antiguidade: listas do CSMP com data-base 14/10/2026. ' +
         'Início no cargo: data do último provimento no Quadro Geral. ' +
+        (COM_FOTO ? 'Fotos: ' + COM_FOTO + ' do acervo de membros (Bublup). ' : '') +
         'Confirme o dado antes de usar.' +
       '</footer>'
     );
@@ -2305,6 +2327,12 @@ const DATA = __DATA_JSON__;
   });
 
   // --- Photo upload / remove ---
+  // Foto do acervo indisponível (offline/404): volta para o placeholder em vez de imagem quebrada
+  photoImg.addEventListener('error', function () {
+    if (!currentMember) return;
+    setPhotoUI(null, currentMember.nome, null);
+  });
+
   photoBox.addEventListener('click', function () {
     if (!currentMember) return;
     photoInput.value = '';

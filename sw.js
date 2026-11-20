@@ -1,14 +1,27 @@
 /* Service worker — Membros MPPE
    Navegação: network-first (um deploy novo aparece na primeira abertura online).
-   Assets: cache-first. Offline: serve o último index.html em cache. */
-const CACHE_NAME = 'membros-v4';
-const ASSETS = [
+   Assets: cache-first. Offline: serve o último index.html em cache + fotos precacheadas. */
+const CACHE_NAME = 'membros-v5';
+const BASE_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-180.png',
   './icon-512.png'
 ];
+// Fotos do acervo: lista gerada por build.py a partir do campo `foto` do dataset.
+const FOTOS = [
+  "./fotos/ana-clezia-ferreira-nunes.jpg",
+  "./fotos/ana-joemia-marques-da-rocha.jpg",
+  "./fotos/ana-maria-moura-maranhao-da-fonte.jpg",
+  "./fotos/ana-rita-coelho-colaco-dias.jpg",
+  "./fotos/andre-jacinto-de-almeida-neto.jpg",
+  "./fotos/ariano-tercio-silva-de-aguiar.jpg",
+  "./fotos/camila-mendes-de-santana-coutinho.jpg",
+  "./fotos/carolina-gurgel-lima.jpg",
+  "./fotos/diogenes-luciano-nogueira-moreira.jpg",
+];
+const ASSETS = BASE_ASSETS.concat(FOTOS);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -161,6 +161,56 @@ with sync_playwright() as p:
     avatar_html = page.evaluate("() => { const a = document.querySelector('.member-row .row-avatar'); return a ? a.innerHTML : ''; }")
     check(avatar_html.strip() != "", f"avatar na linha da lista: {avatar_html[:60]!r}")
 
+    # 5e. fotos do acervo (campo `foto` do dataset -> fotos/<id>.jpg)
+    com_foto = [m for m in data if str(m.get("foto") or "").strip()]
+    page.evaluate("() => { const r = document.getElementById('sheet-root');"
+                  " if (r && r.classList.contains('is-open')) document.getElementById('btn-close-sheet').click(); }")
+    page.wait_for_timeout(600)
+    page.fill("#search-input", "")
+    page.wait_for_timeout(300)
+    avatares_img = page.evaluate("() => document.querySelectorAll('#list-container .row-avatar img').length")
+    check(avatares_img == len(com_foto), f"avatares com foto na lista = {avatares_img} (dataset: {len(com_foto)})")
+
+    from PIL import Image  # noqa: E402  (só para conferir o arquivo publicado)
+    faltando, nao_quadradas = [], []
+    for m in com_foto:
+        caminho = os.path.join(ROOT, m["foto"])
+        if not os.path.isfile(caminho):
+            faltando.append(m["foto"])
+            continue
+        w, h = Image.open(caminho).size
+        if w != h:
+            nao_quadradas.append((m["foto"], (w, h)))
+    check(not faltando, f"todos os arquivos de foto existem ({len(com_foto) - len(faltando)}/{len(com_foto)})")
+    check(not nao_quadradas, f"fotos quadradas (1:1) para o avatar: {nao_quadradas[:3]}")
+
+    if com_foto:
+        alvo = com_foto[0]
+        page.locator(f"#list-container .member-row[data-id='{alvo['id']}']").first.click()
+        page.wait_for_timeout(900)
+        foto_sheet = page.evaluate(
+            "() => { const i = document.querySelector('#photo-img');"
+            " return { visivel: !!(i && !i.hidden), natural: i ? i.naturalWidth : 0, src: i ? i.getAttribute('src') : '' }; }"
+        )
+        check(foto_sheet["visivel"] and foto_sheet["natural"] > 0,
+              f"foto do acervo na sheet de {alvo['nome']}: {foto_sheet}")
+        check(str(foto_sheet["src"]).lstrip("./") == alvo["foto"],
+              f"src da foto = campo do dataset ({foto_sheet['src']!r})")
+        page.evaluate("() => document.getElementById('btn-close-sheet').click()")
+        page.wait_for_timeout(600)
+
+    # requisições das fotos: nenhuma 404 (o servidor local é o mesmo caminho do Pages)
+    respostas = [r for r in requests if "/fotos/" in r]
+    check(len(respostas) >= 1, f"fotos foram requisitadas pelo app ({len(respostas)} urls)")
+
+    # reabre a sheet do primeiro membro: o próximo teste (upload) depende disso
+    page.fill("#search-input", "")
+    page.wait_for_timeout(300)
+    page.locator("#list-container .member-row").first.click()
+    page.wait_for_timeout(700)
+    check(page.evaluate("() => document.getElementById('sheet-root').classList.contains('is-open')"),
+          "sheet do primeiro membro reaberta para o teste de upload")
+
     # 6. foto: upload + persistência
     test_img = "/tmp/test_photo.jpg"
     subprocess.run([sys.executable if False else "python3", "-c", f"""
