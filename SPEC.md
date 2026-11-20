@@ -36,7 +36,7 @@ Obsidian, não envie e-mail, não instale pacotes, não use a internet.**
 {"id":"slug","nome":"NOME COMPLETO EM CAIXA ALTA","cargo":"4º Procurador de Justiça Criminal",
  "promotoria":"Recife","entrancia":"-","circunscricao":"2ª Instância","atribuicao":"Crime",
  "atuacao":"texto longo (pode ser vazio)","outrosCargos":[],
- "telefone":"81 98715-9442","whatsapp":"https://wa.me/5581987159442",
+ "telefone":"081 987159442","whatsapp":"https://wa.me/5581987159442",
  "email":"adalberto@mppe.mp.br","fonteTelefone":"AMPPE","telefoneSuspeito":false,"matricula":""}
 ```
 
@@ -62,10 +62,11 @@ Fatos verificados (use como teste, **não digite esses números no código**; le
      persiste após fechar/reabrir o app; botão discreto "remover foto". Precisa funcionar offline.
    - Nome completo (tipografia grande), cargo, promotoria + circunscrição, entrância.
    - `atuação` (texto do campo `atuacao`) em bloco secundário, só se não estiver vazio.
-   - **Telefone** com botão `WhatsApp` (abre `whatsapp` em nova aba) e botão `Ligar` (`tel:`),
-     além de "copiar número". Se `telefoneSuspeito` for `true`, mostrar selo âmbar
-     "número não confirmado" ao lado do telefone. Se não houver telefone, mostrar
-     "sem telefone no cadastro" em vez dos botões.
+   - **Telefone** exibido no padrão local `0DDD NNNNNNNN` (ex.: `081 994324196`) com botão
+     `WhatsApp` (abre `whatsapp` em nova aba) e botão `Ligar` (`tel:` com `+55`, sem o zero),
+     além de "copiar número" (copia o mesmo texto exibido). Se `telefoneSuspeito` for `true`,
+     mostrar selo âmbar "número não confirmado" ao lado do telefone. Se não houver telefone,
+     mostrar "sem telefone no cadastro" em vez dos botões.
    - **E-mail** como `mailto:` clicável + botão copiar; se vazio, "sem e-mail no cadastro".
    - Rodapé discreto: fonte do telefone (`fonteTelefone`) e matrícula quando existir.
 5. **Compartilhar** (botão no topo da sheet): `navigator.share` com nome, cargo, promotoria,

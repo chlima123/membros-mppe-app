@@ -1320,8 +1320,22 @@ const DATA = __DATA_JSON__;
     return first >= 'A' && first <= 'Z' ? first : '#';
   }
 
+  // Telefone exibido no padrao local: 0 + DDD + numero (ex.: 081 994324196)
+  function phoneDigits(phone) {
+    let digits = String(phone || '').replace(/\D/g, '');
+    if (digits.indexOf('55') === 0 && digits.length > 11) digits = digits.slice(2);
+    if (digits.charAt(0) === '0' && digits.length > 11) digits = digits.slice(1);
+    return digits;
+  }
+
+  function formatPhoneDisplay(phone) {
+    const digits = phoneDigits(phone);
+    if (!digits) return '';
+    return '0' + digits.slice(0, 2) + ' ' + digits.slice(2);
+  }
+
   function buildTelHref(phone) {
-    const digits = String(phone || '').replace(/\D/g, '');
+    const digits = phoneDigits(phone);
     if (!digits) return '';
     return 'tel:' + (digits.length <= 11 ? '+55' + digits : '+' + digits);
   }
@@ -1918,7 +1932,7 @@ const DATA = __DATA_JSON__;
     const phone = String(m.telefone || '').trim();
     const wa = String(m.whatsapp || '').trim();
     if (phone) {
-      sheetPhoneText.textContent = phone;
+      sheetPhoneText.textContent = formatPhoneDisplay(phone);
       sheetPhoneSuspect.hidden = !m.telefoneSuspeito;
       btnCall.href = buildTelHref(phone);
       if (wa) {
@@ -2013,7 +2027,7 @@ const DATA = __DATA_JSON__;
   // --- Copy & Share actions ---
   btnCopyPhone.addEventListener('click', function () {
     if (!currentMember) return;
-    copyToClipboard(currentMember.raw.telefone, 'Número copiado');
+    copyToClipboard(formatPhoneDisplay(currentMember.raw.telefone), 'Número copiado');
   });
 
   btnCopyEmail.addEventListener('click', function () {
@@ -2029,7 +2043,7 @@ const DATA = __DATA_JSON__;
     if (currentMember.promotoria) lines.push('Promotoria: ' + currentMember.promotoria);
     if (m.telefone) {
       lines.push(
-        'Telefone: ' + m.telefone + (m.telefoneSuspeito ? ' (número não confirmado)' : '')
+        'Telefone: ' + formatPhoneDisplay(m.telefone) + (m.telefoneSuspeito ? ' (número não confirmado)' : '')
       );
     }
     if (m.email) lines.push('E-mail: ' + m.email);

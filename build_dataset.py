@@ -111,10 +111,11 @@ def _split(ddd, tel):
 
 
 def fmt_phone(ddd, tel):
+    """Formato de exibicao local: 0 + DDD + numero, sem separador (ex.: 081 994324196)."""
     ddd2, sub = _split(ddd, tel)
     if not re.fullmatch(r"\d{8,9}", sub or ""):
         return (f"{ddd} {tel}").strip()
-    return f"{ddd2} {sub[:-4]}-{sub[-4:]}"
+    return f"0{ddd2} {sub}"
 
 
 def wa_from(ddd, tel):

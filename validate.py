@@ -111,6 +111,15 @@ with sync_playwright() as p:
     check(nome_sheet.upper() == primeiro["nome"].upper(), f"nome na sheet: {nome_sheet!r}")
     check(primeiro["cargo"].lower()[:12] in page.inner_text("#sheet-cargo").lower(), "cargo na sheet")
 
+    # 5b. telefone exibido no padrao local: 0 + DDD + numero
+    if primeiro["telefone"]:
+        tel_txt = page.evaluate("() => document.getElementById('sheet-phone-text').textContent.trim()")
+        check(re.fullmatch(r"0\d{2} \d{8,9}", tel_txt) is not None,
+              f"telefone exibido no padrao 0DDD numero: {tel_txt!r}")
+        check(tel_txt == primeiro["telefone"], f"telefone da sheet = dataset ({primeiro['telefone']!r})")
+        tel_href = page.get_attribute("#btn-call", "href") or ""
+        check(tel_href == "tel:+55" + tel_txt.replace(" ", "")[1:], f"href tel: sem o zero ({tel_href})")
+
     box = page.locator("#photo-box").bounding_box()
     if box:
         ratio = box["width"] / box["height"]
