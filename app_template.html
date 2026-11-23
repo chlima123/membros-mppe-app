@@ -1649,6 +1649,47 @@ const DATA = __DATA_JSON__;
     return 'tel:' + (digits.length <= 11 ? '+55' + digits : '+' + digits);
   }
 
+  // --- WhatsApp: wa.me abre a WEB; o app desktop do macOS so registra o esquema whats: ---
+  // Numero com DDI para o esquema nativo: https://wa.me/5581999768606 -> 5581999768606
+  function waNumber(wa) {
+    const raw = String(wa || '').replace(/\D/g, '');
+    if (raw.length > 11 && raw.indexOf('55') === 0) return raw;
+    const local = phoneDigits(wa);
+    return local ? '55' + local : '';
+  }
+
+  function waAppHref(wa) {
+    const num = waNumber(wa);
+    return num ? 'whatsapp://send?phone=' + num : '';
+  }
+
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Windows Phone|Mobile/i.test(navigator.userAgent || '');
+  }
+
+  // Desktop: abre direto no WhatsApp instalado; se o app nao assumir em 1,2s, cai no wa.me web.
+  function openWhatsappDesktop(wa) {
+    const appHref = waAppHref(wa);
+    if (!appHref || isMobileDevice()) return false;
+    let saiu = false;
+    const marcar = function () { saiu = true; };
+    document.addEventListener('visibilitychange', marcar);
+    window.addEventListener('blur', marcar);
+    window.setTimeout(function () {
+      document.removeEventListener('visibilitychange', marcar);
+      window.removeEventListener('blur', marcar);
+      if (!saiu && !document.hidden) window.open(wa, '_blank', 'noopener');
+    }, 1200);
+    try {
+      window.location.href = appHref;
+    } catch (err) {
+      document.removeEventListener('visibilitychange', marcar);
+      window.removeEventListener('blur', marcar);
+      return false;
+    }
+    return true;
+  }
+
   // --- Datas funcionais (nascimento, ingresso, antiguidade) ---
   function parseBRDate(value) {
     const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value || '').trim());
@@ -2493,6 +2534,13 @@ const DATA = __DATA_JSON__;
   });
 
   // --- Copy & Share actions ---
+  // Desktop: handoff para o WhatsApp instalado (whatsapp://); mobile segue no wa.me.
+  btnWhatsapp.addEventListener('click', function (ev) {
+    const href = btnWhatsapp.getAttribute('href');
+    if (!href) return;
+    if (openWhatsappDesktop(href)) ev.preventDefault();
+  });
+
   btnCopyPhone.addEventListener('click', function () {
     if (!currentMember) return;
     copyToClipboard(formatPhoneDisplay(currentMember.raw.telefone), 'Número copiado');
@@ -2671,6 +2719,14 @@ const DATA = __DATA_JSON__;
 
   // --- Initial render ---
   renderList();
+
+  // Hook de teste: validacao automatizada do handoff wa.me -> WhatsApp desktop.
+  window.__mppeWa = {
+    waNumber: waNumber,
+    waAppHref: waAppHref,
+    isMobileDevice: isMobileDevice,
+    openWhatsappDesktop: openWhatsappDesktop
+  };
 
   // --- Service Worker registration (only on https: or localhost, fail silently) ---
   if ('serviceWorker' in navigator) {

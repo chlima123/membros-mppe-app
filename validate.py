@@ -165,6 +165,49 @@ with sync_playwright() as p:
     esperado_wa = "wa.me/55" + re.sub(r"\D", "", primeiro["telefone"])
     check(re.sub(r"\D", "", wa)[-11:] == re.sub(r"\D", "", esperado_wa)[-11:], f"href WhatsApp = {wa}")
 
+    # 5b-bis. Desktop: wa.me abre a WEB; o app do macOS so registra o esquema whatsapp:
+    # (regressao 23/11/2026: o botao levava so a api.whatsapp.com e nao abria o WhatsApp desktop)
+    helpers = page.evaluate(
+        "() => ({ num: window.__mppeWa.waNumber('https://wa.me/5581999768606'),"
+        " app: window.__mppeWa.waAppHref('https://wa.me/5581999768606'),"
+        " doTelefone: window.__mppeWa.waNumber('081 999768606'),"
+        " vazio: window.__mppeWa.waAppHref('') })"
+    )
+    check(helpers["num"] == "5581999768606", f"waNumber mantem o DDI 55 ({helpers['num']})")
+    check(helpers["app"] == "whatsapp://send?phone=5581999768606", f"waAppHref -> {helpers['app']}")
+    check(helpers["doTelefone"] == "5581999768606", f"waNumber a partir do telefone exibido ({helpers['doTelefone']})")
+    check(helpers["vazio"] == "", f"sem link -> sem esquema nativo ({helpers['vazio']!r})")
+
+    ctx_desk = browser.new_context(
+        viewport={"width": 1280, "height": 800},
+        user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    )
+    page_desk = ctx_desk.new_page()
+    page_desk.goto(BASE, wait_until="load")
+    page_desk.wait_for_timeout(400)
+    page_desk.evaluate("h => localStorage.setItem('mppe_unlock_v1', h)", LOCK_HASH)
+    page_desk.reload(wait_until="load")
+    page_desk.wait_for_timeout(600)
+    check(page_desk.evaluate("() => window.__mppeWa.isMobileDevice()") is False, "desktop reconhecido (isMobileDevice = false)")
+    page_desk.fill("#search-input", "joemia")
+    page_desk.wait_for_timeout(400)
+    page_desk.locator("#list-container .member-row").first.click()
+    page_desk.wait_for_timeout(500)
+    wa_ana = page_desk.get_attribute("#btn-whatsapp", "href") or ""
+    check(wa_ana == "https://wa.me/5581999768606", f"Ana Joemia: href do botao = {wa_ana}")
+    page_desk.evaluate(
+        "() => { window.__waOpen = []; window.open = function (u) { window.__waOpen.push(String(u)); return null; }; }"
+    )
+    url_antes = page_desk.url
+    page_desk.evaluate("() => document.getElementById('btn-whatsapp').click()")
+    page_desk.wait_for_timeout(250)
+    check(page_desk.url == url_antes, "clique no desktop nao joga a pagina direto para o wa.me")
+    page_desk.wait_for_timeout(1400)
+    abertos = page_desk.evaluate("() => window.__waOpen")
+    check(abertos == ["https://wa.me/5581999768606"],
+          f"app ausente -> fallback abre o wa.me ({abertos})")
+    ctx_desk.close()
+
     # 5c. carreira e antiguidade na sheet (valores lidos do dataset)
     def txt(sel):
         return page.evaluate("(s) => { const e = document.querySelector(s); return e ? e.textContent.trim() : ''; }", sel)

@@ -1,7 +1,7 @@
 /* Service worker — Membros MPPE
    Navegação: network-first (um deploy novo aparece na primeira abertura online).
    Assets: cache-first. Offline: serve o último index.html em cache + fotos precacheadas. */
-const CACHE_NAME = 'membros-v7';
+const CACHE_NAME = 'membros-v8';
 const BASE_ASSETS = [
   './',
   './index.html',
