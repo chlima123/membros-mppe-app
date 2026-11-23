@@ -84,6 +84,16 @@ fotos/                 # 41 fotos 400x400 (avatar e ficha)
 index.html             # app publicado (gerado)
 manifest.webmanifest   # PWA
 sw.js                  # cache offline (index + ícones + fotos)
-validate.py            # validação em navegador real (Playwright, perfil iPhone)
+validate.py            # validação em navegador real (Playwright, perfil iPhone; MPPE_SENHA=<senha> testa o portão)
 icon-180.png / icon-512.png
 ```
+
+## Portão de senha
+
+`app_template.html` abre num portão de senha (bloco `.lock` + `LOCK_HASH`) antes de mostrar o app; o
+desbloqueio fica em `localStorage['mppe_unlock_v1']`. A senha **não** está escrita no arquivo: o código
+guarda só o FNV-1a de `"mppe|" + senha`, e a comparação é feita em JS.
+
+Limite conhecido: é página estática (GitHub Pages, repo público) — o portão barra acesso casual, mas
+quem abrir o código-fonte ou o `dataset.json` no repositório vê os dados. Trocar a senha = recalcular o
+hash e substituir `LOCK_HASH` no template (depois rodar `build.py`).

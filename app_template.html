@@ -1150,9 +1150,214 @@
         transition: none;
       }
     }
+    /* --- Portão de senha --- */
+    .lock {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px max(20px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));
+      background: var(--bg);
+      font-family: var(--font-sans);
+    }
+    body.is-unlocked .lock {
+      display: none;
+    }
+    body:not(.is-unlocked) .app {
+      display: none;
+    }
+    .lock-card {
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+    }
+    .lock-badge {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .lock-badge svg {
+      width: 30px;
+      height: 30px;
+    }
+    .lock-title {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text);
+    }
+    .lock-sub {
+      margin: 0 0 22px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+    .lock-field {
+      display: block;
+      margin-bottom: 12px;
+    }
+    .lock-input {
+      width: 100%;
+      padding: 15px 16px;
+      font-size: 17px;
+      font-family: var(--font-sans);
+      text-align: center;
+      letter-spacing: 6px;
+      color: var(--text);
+      background: var(--surface-input);
+      border: 1px solid var(--separator);
+      border-radius: 12px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .lock-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .lock-input::placeholder {
+      letter-spacing: 0;
+      color: var(--text-tertiary);
+    }
+    .lock-submit {
+      width: 100%;
+      padding: 15px 16px;
+      font-size: 17px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      color: var(--accent-fg);
+      background: var(--accent);
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .lock-submit:active {
+      transform: scale(0.985);
+    }
+    .lock-error {
+      min-height: 20px;
+      margin: 12px 0 0;
+      font-size: 13px;
+      color: var(--danger);
+    }
+    .lock.is-shaking .lock-card {
+      animation: lockShake 0.32s ease;
+    }
+    @keyframes lockShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      45% { transform: translateX(6px); }
+      70% { transform: translateX(-4px); }
+      90% { transform: translateX(2px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .lock.is-shaking .lock-card {
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="lock" id="lock-screen">
+    <div class="lock-card">
+      <div class="lock-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10.5" width="16" height="10.5" rx="2.5"></rect>
+          <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path>
+          <circle cx="12" cy="15.6" r="1.4" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </div>
+      <h1 class="lock-title">Membros MPPE</h1>
+      <p class="lock-sub">Acesso restrito. Informe a senha para abrir o cadastro.</p>
+      <form id="lock-form" autocomplete="off" novalidate>
+        <label class="lock-field" for="lock-password">
+          <input
+            id="lock-password"
+            class="lock-input"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="12"
+            placeholder="Senha"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            aria-label="Senha de acesso"
+          >
+        </label>
+        <button type="submit" class="lock-submit" id="lock-submit">Entrar</button>
+      </form>
+      <p class="lock-error" id="lock-error" role="alert" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <script>
+    /* Portão de senha (SHA-less: FNV-1a de "mppe|" + senha).
+       Barra acesso casual: é página estática, os dados seguem no HTML publicado. */
+    (function () {
+      var LOCK_KEY = 'mppe_unlock_v1';
+      var LOCK_HASH = 'f442c4f9';
+      var lock = document.getElementById('lock-screen');
+      var form = document.getElementById('lock-form');
+      var input = document.getElementById('lock-password');
+      var err = document.getElementById('lock-error');
+
+      function hash(str) {
+        var x = 2166136261;
+        for (var i = 0; i < str.length; i++) {
+          x ^= str.charCodeAt(i);
+          x = Math.imul(x, 16777619) >>> 0;
+        }
+        return ('0000000' + x.toString(16)).slice(-8);
+      }
+
+      function alreadyUnlocked() {
+        try {
+          return localStorage.getItem(LOCK_KEY) === LOCK_HASH;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      if (alreadyUnlocked()) {
+        document.body.classList.add('is-unlocked');
+        return;
+      }
+
+      setTimeout(function () {
+        try { input.focus(); } catch (_) {}
+      }, 250);
+
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var value = String(input.value || '').trim();
+        if (hash('mppe|' + value) === LOCK_HASH) {
+          try { localStorage.setItem(LOCK_KEY, LOCK_HASH); } catch (_) {}
+          err.textContent = '';
+          input.value = '';
+          document.body.classList.add('is-unlocked');
+          try { input.blur(); } catch (_) {}
+          return;
+        }
+        err.textContent = 'Senha incorreta. Tente novamente.';
+        input.value = '';
+        lock.classList.add('is-shaking');
+        setTimeout(function () { lock.classList.remove('is-shaking'); }, 360);
+        try { input.focus(); } catch (_) {}
+      });
+    })();
+  </script>
+
   <div class="app">
     <div class="scroll-view" id="scroll-view">
       <header class="app-header" id="app-header">

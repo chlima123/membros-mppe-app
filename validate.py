@@ -37,6 +37,40 @@ with sync_playwright() as p:
     page.goto(BASE, wait_until="load")
     page.wait_for_timeout(700)
 
+    # 0. Portão de senha
+    html_local = open(f"{ROOT}/index.html", encoding="utf-8").read()
+    m_hash = re.search(r"var LOCK_HASH = '([0-9a-f]+)'", html_local)
+    LOCK_HASH = m_hash.group(1) if m_hash else ""
+    SENHA = os.environ.get("MPPE_SENHA", "")
+    check(bool(LOCK_HASH), f"hash do portão presente no index.html ({LOCK_HASH!r})")
+    check(page.is_visible("#lock-screen"), "primeira abertura: portão de senha visível")
+    check(not page.is_visible(".app"), "primeira abertura: app oculto antes da senha")
+
+    page.fill("#lock-password", "0000")
+    page.click("#lock-submit")
+    page.wait_for_timeout(250)
+    erro_txt = page.inner_text("#lock-error")
+    check("incorreta" in erro_txt.lower(), f"senha errada -> erro exibido ({erro_txt!r})")
+    check(not page.is_visible(".app"), "senha errada -> app continua oculto")
+
+    if SENHA:
+        page.fill("#lock-password", SENHA)
+        page.click("#lock-submit")
+        page.wait_for_timeout(350)
+        check(not page.is_visible("#lock-screen"), "senha correta -> portão sai de cena")
+        check(page.is_visible(".app"), "senha correta -> app visível")
+        page.reload(wait_until="load")
+        page.wait_for_timeout(600)
+        check(page.is_visible(".app") and not page.is_visible("#lock-screen"),
+              "desbloqueio persiste após reload (localStorage)")
+    else:
+        print("nota: MPPE_SENHA não definida — teste da senha correta não executado")
+
+    if not page.is_visible(".app"):
+        page.evaluate("h => localStorage.setItem('mppe_unlock_v1', h)", LOCK_HASH)
+        page.reload(wait_until="load")
+        page.wait_for_timeout(700)
+
     # 1. lista
     rows = page.locator("#list-container .member-row, #list-container [data-id]")
     check(rows.count() == EXP_TOTAL, f"linhas na lista = {rows.count()} (esperado {EXP_TOTAL})")
