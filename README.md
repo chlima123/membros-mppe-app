@@ -15,7 +15,7 @@ telefone com link de WhatsApp, e-mail, foto do acervo (quando existe) e foto 3×
 | Campo | Fonte |
 |---|---|
 | nome, cargo, promotoria, entrância, circunscrição | Quadro Geral de Membros (portal MPPE, 4 telas de 18/11/2026) |
-| telefone + WhatsApp | AMPPE 2026 (558 registros), com a Corregedoria-Geral como fallback |
+| telefone + WhatsApp | AMPPE 2026 (558 registros), com a Corregedoria-Geral como fallback; os 11 empossados de 19/11/2026 vêm do overlay `contatos_2026-11-23.json` (contatos conferidos pelo titular) |
 | e-mail | export do diretório de usuários MPPE (30/01/2026, 469 registros) |
 | nascimento, antiguidade, carreira | listas de antiguidade do CSMP (data-base 14/10/2026) |
 | `foto` | acervo Bublup + caderno do Evernote — `fotos/<id>.jpg` |
@@ -63,11 +63,12 @@ para o placeholder (nada de imagem quebrada).
 ## Cobertura verificada
 
 - 465 membros (não 544 cargos: 79 estão vagos)
-- 453 com telefone; 453 com link de WhatsApp; 450 com e-mail
+- 464 com telefone; 464 com link de WhatsApp; 450 com e-mail
 - 41 com foto do acervo (9 do Bublup + 32 do caderno do Evernote); os demais mostram as iniciais no avatar
-- 6 telefones marcados **não confirmados** (número repetido em mais de um cadastro na fonte)
-- 12 sem telefone e sem e-mail — os 11 empossados em 19/11/2026 (não existem no AMPPE de ago/2026 nem no
-  export de e-mails de jan/2026; casar por nome dava homônimo falso) + 1 sem cadastro nas fontes
+- 7 telefones marcados **não confirmados** (6 com número repetido em mais de um cadastro na fonte +
+  1 empossado cuja atribuição do contato é só pela contagem da lista)
+- 1 sem telefone e sem e-mail — único membro sem cadastro nas fontes de contato (os 11 empossados em
+  19/11/2026, que não existem no AMPPE de ago/2026 nem no export de janeiro, entraram pelo overlay de contatos)
 - 15 sem e-mail (os 11 novos + 4 recém-chegados por permuta, fora do export de janeiro)
 - entrância: 1ª = 59, 2ª = 129, 3ª = 222, 2ª Instância = 55
 
@@ -79,6 +80,7 @@ build.py               # template + dataset.json -> index.html (+ precache de fo
 dataset.json           # 465 registros
 build_dataset.py       # extrai/cruza as fontes do vault
 posse_2026-11-19.json  # overlay das posses posteriores ao retrato do Quadro
+contatos_2026-11-23.json # overlay de contato dos empossados (fora do AMPPE/export)
 tools/fotos_build.py   # fotos do acervo (Bublup + Evernote) -> fotos/ + campo `foto`
 fotos/                 # 41 fotos 400x400 (avatar e ficha)
 index.html             # app publicado (gerado)

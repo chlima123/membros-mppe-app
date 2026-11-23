@@ -17,6 +17,7 @@ VAULT = "/Users/chlima/Documents/chlima123/001_TRABALHO/CGMP/Membros_CGMP"
 AMPPE = os.path.join(VAULT, "2026-08-06_amppe_telefones_whatsapp_membros.md")
 CORREG = os.path.join(VAULT, "2026-08-31_Telefones_Anotados_Corregedoria.md")
 EMAILS = os.path.join(VAULT, "2026-10-06_emails_membros_mppe_export_diretorio.md")
+CONTATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "contatos_2026-11-23.json")
 OUT = "dataset.json"
 
 
@@ -338,6 +339,34 @@ for mail, n in mail_freq.items():
 
 for p in out:
     p.pop("_emailRow", None)
+
+# ---------- 5. Contatos manuais (overlay por id) ----------
+# Quem empossou depois das fontes de contato (AMPPE ago/2026, export jan/2026) está em POSSE_NOMES e
+# fica sem telefone: o matching por nome é proibido ali. Contato confirmado de outra origem entra por
+# aqui, com a fonte anotada; id inexistente aborta (id não é dado a inventar).
+if os.path.exists(CONTATOS):
+    manuais = json.load(open(CONTATOS, encoding="utf-8"))
+    por_id = {r["id"]: r for r in out}
+    aplicados = 0
+    for c in manuais:
+        r = por_id.get(c.get("id"))
+        if r is None:
+            sys.exit(f"ERRO contatos: id inexistente no dataset: {c.get('id')}")
+        if not c.get("telefone"):
+            continue
+        dig = re.sub(r"\D", "", c["telefone"])
+        r["telefone"] = c["telefone"]
+        r["whatsapp"] = c.get("whatsapp") or f"https://wa.me/55{dig.lstrip('0')}"
+        r["fonteTelefone"] = c.get("fonte", "contato manual")
+        r["telefoneSuspeito"] = bool(c.get("suspeito", False))
+        if c.get("email"):
+            r["email"] = c["email"]
+        if c.get("matricula"):
+            r["matricula"] = c["matricula"]
+        aplicados += 1
+    print(f"contatos manuais aplicados: {aplicados} ({os.path.basename(CONTATOS)})")
+else:
+    print(f"aviso: overlay de contatos ausente ({CONTATOS})")
 
 finais = Counter(re.sub(r"\D", "", p["telefone"])[-9:] for p in out if p["telefone"])
 for p in out:
