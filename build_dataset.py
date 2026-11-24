@@ -17,7 +17,7 @@ VAULT = "/Users/chlima/Documents/chlima123/001_TRABALHO/CGMP/Membros_CGMP"
 AMPPE = os.path.join(VAULT, "2026-08-06_amppe_telefones_whatsapp_membros.md")
 CORREG = os.path.join(VAULT, "2026-08-31_Telefones_Anotados_Corregedoria.md")
 EMAILS = os.path.join(VAULT, "2026-10-06_emails_membros_mppe_export_diretorio.md")
-CONTATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "contatos_2026-11-23.json")
+CONTATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "contatos_2026-11-24.json")
 OUT = "dataset.json"
 
 
@@ -352,13 +352,14 @@ if os.path.exists(CONTATOS):
         r = por_id.get(c.get("id"))
         if r is None:
             sys.exit(f"ERRO contatos: id inexistente no dataset: {c.get('id')}")
-        if not c.get("telefone"):
+        if not any(c.get(k) for k in ("telefone", "email", "matricula")):
             continue
-        dig = re.sub(r"\D", "", c["telefone"])
-        r["telefone"] = c["telefone"]
-        r["whatsapp"] = c.get("whatsapp") or f"https://wa.me/55{dig.lstrip('0')}"
-        r["fonteTelefone"] = c.get("fonte", "contato manual")
-        r["telefoneSuspeito"] = bool(c.get("suspeito", False))
+        if c.get("telefone"):
+            dig = re.sub(r"\D", "", c["telefone"])
+            r["telefone"] = c["telefone"]
+            r["whatsapp"] = c.get("whatsapp") or f"https://wa.me/55{dig.lstrip('0')}"
+            r["fonteTelefone"] = c.get("fonte", "contato manual")
+            r["telefoneSuspeito"] = bool(c.get("suspeito", False))
         if c.get("email"):
             r["email"] = c["email"]
         if c.get("matricula"):
