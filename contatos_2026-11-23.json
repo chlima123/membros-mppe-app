@@ -1,101 +1,112 @@
 [
- {
-  "id": "augusto-cesar-vasconcelos-galvao",
-  "nome": "AUGUSTO CÉSAR VASCONCELOS GALVÃO",
-  "telefone": "061 981383548",
-  "whatsapp": "https://wa.me/5561981383548",
-  "fonte": "Contato informado por Charles (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome abreviado na origem (sem Vasconcelos); número conferido por Charles em 23/11/2026 — o da lista original (062 982385548) foi descartado"
- },
- {
-  "id": "jessica-neves-de-almeida-morais",
-  "nome": "JÉSSICA NEVES DE ALMEIDA MORAIS",
-  "telefone": "083 999961544",
-  "whatsapp": "https://wa.me/5583999961544",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome confere com a ficha"
- },
- {
-  "id": "ozenilda-da-conceicao-neves",
-  "nome": "OZENILDA DA CONCEIÇÃO NEVES",
-  "telefone": "073 982279241",
-  "whatsapp": "https://wa.me/5573982279241",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "sobrenome grafado Nunes na origem (ficha: Neves)"
- },
- {
-  "id": "mario-henrique-dalmeida-ferreira",
-  "nome": "MÁRIO HENRIQUE DALMEIDA FERREIRA",
-  "telefone": "021 979821278",
-  "whatsapp": "https://wa.me/5521979821278",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome confere com a ficha (D'Almeida/Dalmeida)"
- },
- {
-  "id": "flavio-augusto-godoy",
-  "nome": "FLÁVIO AUGUSTO GODOY",
-  "telefone": "011 947275157",
-  "whatsapp": "https://wa.me/5511947275157",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome confere com a ficha"
- },
- {
-  "id": "bruno-luiz-porcino-goncalves-pereira",
-  "nome": "BRUNO LUIZ PORCINO GONÇALVES PEREIRA",
-  "telefone": "033 999626103",
-  "whatsapp": "https://wa.me/5533999626103",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": true,
-  "conferencia": "nome na origem muito divergente (Ruy/Júnior vs. Luiz Porcino/Pereira) — atribuição só pela contagem 11×11; confirmar antes de usar"
- },
- {
-  "id": "domingos-de-araujo-bessa-neto",
-  "nome": "DOMINGOS DE ARAUJO BESSA NETO",
-  "telefone": "085 991698197",
-  "whatsapp": "https://wa.me/5585991698197",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "sobrenome grafado Bossa na origem (ficha: Bessa)"
- },
- {
-  "id": "jessica-de-jesus-almeida",
-  "nome": "JÉSSICA DE JESUS ALMEIDA",
-  "telefone": "079 999666604",
-  "whatsapp": "https://wa.me/5579999666604",
-  "fonte": "Contato informado por Charles (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "prenome lido como Júnia na origem; número corrigido por Charles (o da lista, 075 999666604, foi descartado)"
- },
- {
-  "id": "francisco-heriberto-araujo-pereira-neto",
-  "nome": "FRANCISCO HERIBERTO ARAUJO PEREIRA NETO",
-  "telefone": "083 998293749",
-  "whatsapp": "https://wa.me/5583998293749",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome confere com a ficha"
- },
- {
-  "id": "jessica-louise-bezerra-varela",
-  "nome": "JÉSSICA LOUISE BEZERRA VARELA",
-  "telefone": "084 988053562",
-  "whatsapp": "https://wa.me/5584988053562",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "nome confere com a ficha"
- },
- {
-  "id": "tamara-lopes-de-moraes-chezzi",
-  "nome": "TAMARA LOPES DE MORAES CHEZZI",
-  "telefone": "011 992616952",
-  "whatsapp": "https://wa.me/5511992616952",
-  "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
-  "suspeito": false,
-  "conferencia": "Morais/Moraes — variação de grafia na origem"
- }
+  {
+    "id": "augusto-cesar-vasconcelos-galvao",
+    "nome": "AUGUSTO CÉSAR VASCONCELOS GALVÃO",
+    "telefone": "061 981383548",
+    "whatsapp": "https://wa.me/5561981383548",
+    "fonte": "Contato informado por Charles (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome abreviado na origem (sem Vasconcelos); número conferido por Charles em 23/11/2026 — o da lista original (062 982385548) foi descartado"
+  },
+  {
+    "id": "jessica-neves-de-almeida-morais",
+    "nome": "JÉSSICA NEVES DE ALMEIDA MORAIS",
+    "telefone": "083 999961544",
+    "whatsapp": "https://wa.me/5583999961544",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome confere com a ficha"
+  },
+  {
+    "id": "ozenilda-da-conceicao-neves",
+    "nome": "OZENILDA DA CONCEIÇÃO NEVES",
+    "telefone": "073 982279241",
+    "whatsapp": "https://wa.me/5573982279241",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "sobrenome grafado Nunes na origem (ficha: Neves)"
+  },
+  {
+    "id": "mario-henrique-dalmeida-ferreira",
+    "nome": "MÁRIO HENRIQUE DALMEIDA FERREIRA",
+    "telefone": "021 979821278",
+    "whatsapp": "https://wa.me/5521979821278",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome confere com a ficha (D'Almeida/Dalmeida)"
+  },
+  {
+    "id": "flavio-augusto-godoy",
+    "nome": "FLÁVIO AUGUSTO GODOY",
+    "telefone": "011 947275157",
+    "whatsapp": "https://wa.me/5511947275157",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome confere com a ficha"
+  },
+  {
+    "id": "bruno-luiz-porcino-goncalves-pereira",
+    "nome": "BRUNO LUIZ PORCINO GONÇALVES PEREIRA",
+    "telefone": "033 999626103",
+    "whatsapp": "https://wa.me/5533999626103",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": true,
+    "conferencia": "nome na origem muito divergente (Ruy/Júnior vs. Luiz Porcino/Pereira) — atribuição só pela contagem 11×11; confirmar antes de usar"
+  },
+  {
+    "id": "domingos-de-araujo-bessa-neto",
+    "nome": "DOMINGOS DE ARAUJO BESSA NETO",
+    "telefone": "085 991698197",
+    "whatsapp": "https://wa.me/5585991698197",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "sobrenome grafado Bossa na origem (ficha: Bessa)"
+  },
+  {
+    "id": "jessica-de-jesus-almeida",
+    "nome": "JÉSSICA DE JESUS ALMEIDA",
+    "telefone": "079 999666604",
+    "whatsapp": "https://wa.me/5579999666604",
+    "fonte": "Contato informado por Charles (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "prenome lido como Júnia na origem; número corrigido por Charles (o da lista, 075 999666604, foi descartado)"
+  },
+  {
+    "id": "francisco-heriberto-araujo-pereira-neto",
+    "nome": "FRANCISCO HERIBERTO ARAUJO PEREIRA NETO",
+    "telefone": "083 998293749",
+    "whatsapp": "https://wa.me/5583998293749",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome confere com a ficha"
+  },
+  {
+    "id": "jessica-louise-bezerra-varela",
+    "nome": "JÉSSICA LOUISE BEZERRA VARELA",
+    "telefone": "084 988053562",
+    "whatsapp": "https://wa.me/5584988053562",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "nome confere com a ficha"
+  },
+  {
+    "id": "tamara-lopes-de-moraes-chezzi",
+    "nome": "TAMARA LOPES DE MORAES CHEZZI",
+    "telefone": "011 992616952",
+    "whatsapp": "https://wa.me/5511992616952",
+    "fonte": "Lista de contatos dos 11 empossados (23/11/2026)",
+    "suspeito": false,
+    "conferencia": "Morais/Moraes — variação de grafia na origem"
+  },
+  {
+    "id": "viviane-maria-freitas-melo-monteiro-de-menezes",
+    "nome": "VIVIANE MARIA FREITAS MELO MONTEIRO DE MENEZES",
+    "telefone": "081 999480316",
+    "whatsapp": "https://wa.me/5581999480316",
+    "email": "vmenezes@mppe.mp.br",
+    "matricula": "1879227",
+    "fonte": "Charles 24/11/2026 (confere com AMPPE 2026 + Corregedoria)",
+    "suspeito": false,
+    "conferencia": "catalogos grafam VIVIANNE (dois N), mesma matricula 1879227; Corregedoria anota 81 9948-0316 sem o nono digito"
+  }
 ]

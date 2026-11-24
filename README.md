@@ -63,7 +63,7 @@ para o placeholder (nada de imagem quebrada).
 ## Cobertura verificada
 
 - 465 membros (não 544 cargos: 79 estão vagos)
-- 464 com telefone; 464 com link de WhatsApp; 450 com e-mail
+- 465 com telefone; 465 com link de WhatsApp; 451 com e-mail
 - 41 com foto do acervo (9 do Bublup + 32 do caderno do Evernote); os demais mostram as iniciais no avatar
 - 7 telefones marcados **não confirmados** (6 com número repetido em mais de um cadastro na fonte +
   1 empossado cuja atribuição do contato é só pela contagem da lista)
