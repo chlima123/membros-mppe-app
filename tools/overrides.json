@@ -10,5 +10,29 @@
   },
   "delane-barros-de-arruda-mendonca": {
     "_fonte": "sem correspondência confiável na lista de 14/10/2026 (lista traz DELANE BARROS MENDONCA CARNEIRO; grafias divergem em ARRUDA/CARNEIRO) — mantido sem antiguidade"
+  },
+  "lucas-ramos-carvalho": {
+    "inicioCargo": "06/10/2026",
+    "ato": "Permuta",
+    "portaria": "3.356/2026",
+    "_fonte": "ficha do vault (Membros/Lucas_Ramos_Carvalho): 'Provimento: Permuta nacional (MPSE → MPPE), Portaria PGJ nº 3.356/2026, DOE de 06/10/2026' — a ficha usa o layout novo, sem o bloco 'Quadro Geral OFICIAL' que o enrich lê"
+  },
+  "simone-duarte-doca": {
+    "inicioCargo": "19/10/2026",
+    "ato": "Permuta",
+    "portaria": "3.355/2026",
+    "_fonte": "ficha do vault (Membros/Simone_Duarte_Doca): 'em exercício pleno desde 19/10/2026', Portaria PGJ nº 3.355/2026, DOE de 06/10/2026 — a ficha usa o layout novo, sem o bloco 'Quadro Geral OFICIAL' que o enrich lê"
+  },
+  "iranildo-lima-da-costa-junior": {
+    "inicioCargo": "19/10/2026",
+    "ato": "Permuta (exercício pleno em Arcoverde)",
+    "portaria": "3.422/2026",
+    "_fonte": "Portaria PGJ nº 2.719/2026 (14/08/2026) integrou o membro por permuta nacional e atribuiu exercício em Araripina; a Portaria PGJ nº 3.422/2026 (07/10/2026, DOE de 08/10/2026) dispensou de Araripina e designou para o 3º PJ de Arcoverde a partir de 19/10/2026"
+  },
+  "paulo-barbosa-de-almeida-filho": {
+    "inicioCargo": "19/10/2026",
+    "ato": "Permuta (exercício pleno em Serra Talhada)",
+    "portaria": "3.429/2026",
+    "_fonte": "Portaria PGJ nº 3.358/2026 (05/10/2026) integrou o membro por permuta nacional e o colocou à disposição do Gabinete do PGJ; a Portaria PGJ nº 3.429/2026 (07/10/2026, DOE de 08/10/2026) designou o exercício pleno no 4º PJ de Serra Talhada a partir de 19/10/2026"
   }
 }

@@ -21,19 +21,34 @@ def check(cond, msg):
     print(("OK   " if cond else "FAIL ") + msg)
 
 
-# 0a. Overlays de entrada: toda entrada declarada tem de existir no dataset COM contato válido.
-# Gate de regressão: se o overlay perder efeito (cargo não preenchido, contato não aplicado),
-# o membro some do app ou fica sem telefone — e isto acusa.
+# 0a. Overlays de entrada: toda entrada declarada tem de existir no dataset COM o município do overlay.
+# Gate de regressão: se o overlay perder efeito (cargo não preenchido, contato não aplicado), o membro
+# some do app ou fica com o contato errado — e isto acusa. Contato é cobrado só quando o overlay de
+# contatos (contatos_*.json) declara telefone para o membro: entrada legítima sem fonte de telefone
+# (permutante que não está no AMPPE/Corregedoria/export) fica sem contato e NÃO é falha.
 import glob
+_contato_por_id = {}
+for _cf in sorted(glob.glob(f"{ROOT}/contatos_*.json")):
+    for _c in json.load(open(_cf, encoding="utf-8")):
+        if _c.get("telefone"):
+            _contato_por_id[_c["id"]] = _c
 for _ov in sorted(glob.glob(f"{ROOT}/posse_*.json") + glob.glob(f"{ROOT}/entradas_*.json")):
     for e in json.load(open(_ov, encoding="utf-8")):
         r = next((d for d in data if d["nome"] == e["nome"]), None) or {}
         check(r.get("promotoria") == e["municipio"],
               f"overlay {os.path.basename(_ov)}: {e['nome']} no dataset ({e['municipio']})")
-        check(bool(re.fullmatch(r"0\d{2} \d{8,9}", r.get("telefone") or "")),
-              f"  telefone no padrão 0DDD numero: {r.get('telefone')!r}")
-        check((r.get("whatsapp") or "").startswith("https://wa.me/55"),
-              f"  wa.me com DDI 55: {r.get('whatsapp')!r}")
+        esperado = _contato_por_id.get(r.get("id"))
+        if esperado:
+            check(re.sub(r"\D", "", r.get("telefone") or "") == re.sub(r"\D", "", esperado["telefone"]),
+                  f"  telefone do overlay de contatos aplicado: {r.get('telefone')!r}")
+        if r.get("telefone"):
+            check(bool(re.fullmatch(r"0\d{2} \d{8,9}", r.get("telefone") or "")),
+                  f"  telefone no padrão 0DDD numero: {r.get('telefone')!r}")
+            check((r.get("whatsapp") or "").startswith("https://wa.me/55"),
+                  f"  wa.me com DDI 55: {r.get('whatsapp')!r}")
+        else:
+            check(r.get("id") and r["id"] not in _contato_por_id,
+                  f"  sem telefone e sem fonte de contato declarada: {e['nome']}")
 
 
 with sync_playwright() as p:

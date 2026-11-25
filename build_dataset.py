@@ -17,7 +17,7 @@ VAULT = "/Users/chlima/Documents/chlima123/001_TRABALHO/CGMP/Membros_CGMP"
 AMPPE = os.path.join(VAULT, "2026-08-06_amppe_telefones_whatsapp_membros.md")
 CORREG = os.path.join(VAULT, "2026-08-31_Telefones_Anotados_Corregedoria.md")
 EMAILS = os.path.join(VAULT, "2026-10-06_emails_membros_mppe_export_diretorio.md")
-CONTATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "contatos_2026-11-24.json")
+CONTATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "contatos_2026-11-25.json")
 OUT = "dataset.json"
 
 
@@ -50,7 +50,8 @@ print(f"quadro registros: {len(quadro)}")
 #   entradas_2026-10-06_permuta.json -- permuta nacional MPMG->MPPE (Portaria PGJ 3.357/2026)
 BASE = os.path.dirname(os.path.abspath(__file__))
 OVERLAYS = [os.path.join(BASE, f) for f in ("posse_2026-11-19.json",
-                                            "entradas_2026-10-06_permuta.json")
+                                            "entradas_2026-10-06_permuta.json",
+                                            "entradas_2026-11-25_permuta.json")
             if os.path.exists(os.path.join(BASE, f))]
 posses = []
 for _ov in OVERLAYS:

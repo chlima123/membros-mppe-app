@@ -10,12 +10,12 @@ telefone com link de WhatsApp, e-mail, foto do acervo (quando existe) e foto 3×
 
 ## Dados
 
-`dataset.json` — **468 membros** (76 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
+`dataset.json` — **470 membros** (74 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
 
 | Campo | Fonte |
 |---|---|
 | nome, cargo, promotoria, entrância, circunscrição | Quadro Geral de Membros (portal MPPE, 4 telas de 18/11/2026) |
-| telefone + WhatsApp | AMPPE 2026 (558 registros), com a Corregedoria-Geral como fallback; os 11 empossados de 19/11/2026 vêm do overlay `contatos_2026-11-24.json` (contatos conferidos pelo titular; o mesmo overlay corrige a matrícula de quem a fonte de contato não trouxe) |
+| telefone + WhatsApp | AMPPE 2026 (558 registros), com a Corregedoria-Geral como fallback; os 11 empossados de 19/11/2026, os 3 permutantes de 06/10/2026 e o permutante de 17/08/2026 vêm dos overlays `contatos_2026-11-24.json` e `contatos_2026-11-25.json` (contatos conferidos pelo titular; o mesmo overlay corrige a matrícula de quem a fonte de contato não trouxe) |
 | e-mail | export do diretório de usuários MPPE (30/01/2026, 469 registros) |
 | nascimento, antiguidade, carreira | listas de antiguidade do CSMP (data-base 14/10/2026) |
 | `foto` | acervo Bublup + caderno do Evernote — `fotos/<id>.jpg` |
@@ -66,27 +66,29 @@ para o placeholder (nada de imagem quebrada).
 
 ## Cobertura verificada
 
-- 468 membros (não 544 cargos: 76 estão vagos)
-- 468 com telefone; 468 com link de WhatsApp; 451 com e-mail
+- 470 membros (não 544 cargos: 74 estão vagos)
+- 469 com telefone; 469 com link de WhatsApp; 451 com e-mail
 - 41 com foto do acervo (9 do Bublup + 32 do caderno do Evernote); os demais mostram as iniciais no avatar
 - 7 telefones marcados **não confirmados** (6 com número repetido em mais de um cadastro na fonte +
   1 empossado cuja atribuição do contato é só pela contagem da lista)
-- 0 sem telefone — os 11 empossados em 19/11/2026 e os 3 permutantes de 06/10/2026 não existem no AMPPE
-  de ago/2026 nem no export de janeiro e entraram pelos overlays de entrada + de contatos
-- 17 sem e-mail (os 11 novos + 3 recém-chegados por permuta, fora do export de janeiro, + os 3 permutantes
-  de 06/10/2026)
-- entrância: 1ª = 61, 2ª = 129 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
+- 1 sem telefone — PAULO BARBOSA DE ALMEIDA FILHO (4º PJ de Serra Talhada, permuta MPAL→MPPE em 06/10/2026):
+  não consta do AMPPE de ago/2026, da Corregedoria (31/08/2026), do export de janeiro nem dos Contatos Google;
+  os 11 empossados em 19/11/2026 e os demais permutantes entraram pelos overlays de entrada + de contatos
+- 19 sem e-mail (os 11 novos + os recém-chegados por permuta, fora do export de janeiro)
+- entrância: 1ª = 61, 2ª = 131 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
 
 ## Estrutura
 
 ```
 app_template.html      # UI (dados entram pelo marcador __DATA_JSON__)
 build.py               # template + dataset.json -> index.html (+ precache de fotos no sw.js)
-dataset.json           # 468 registros
+dataset.json           # 470 registros
 build_dataset.py       # extrai/cruza as fontes do vault
 posse_2026-11-19.json  # overlay das posses posteriores ao retrato do Quadro
 entradas_2026-10-06_permuta.json # overlay da entrada por permuta nacional (MPMG e MPSE -> MPPE)
+entradas_2026-11-25_permuta.json # overlay dos permutantes IRANILDO (Arcoverde) e PAULO BARBOSA (Serra Talhada)
 contatos_2026-11-24.json # overlay de contato/matrícula por id (quem está fora do AMPPE/export)
+contatos_2026-11-25.json # overlay de contato do permutante de 17/08/2026 (IRANILDO)
 tools/fotos_build.py   # fotos do acervo (Bublup + Evernote) -> fotos/ + campo `foto`
 fotos/                 # 41 fotos 400x400 (avatar e ficha)
 index.html             # app publicado (gerado)
