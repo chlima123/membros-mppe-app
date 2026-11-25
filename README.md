@@ -10,7 +10,7 @@ telefone com link de WhatsApp, e-mail, foto do acervo (quando existe) e foto 3×
 
 ## Dados
 
-`dataset.json` — **467 membros** (77 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
+`dataset.json` — **468 membros** (76 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
 
 | Campo | Fonte |
 |---|---|
@@ -66,23 +66,23 @@ para o placeholder (nada de imagem quebrada).
 
 ## Cobertura verificada
 
-- 467 membros (não 544 cargos: 77 estão vagos)
-- 467 com telefone; 467 com link de WhatsApp; 451 com e-mail
+- 468 membros (não 544 cargos: 76 estão vagos)
+- 468 com telefone; 468 com link de WhatsApp; 451 com e-mail
 - 41 com foto do acervo (9 do Bublup + 32 do caderno do Evernote); os demais mostram as iniciais no avatar
 - 7 telefones marcados **não confirmados** (6 com número repetido em mais de um cadastro na fonte +
   1 empossado cuja atribuição do contato é só pela contagem da lista)
-- 0 sem telefone — os 11 empossados em 19/11/2026 e os 2 permutantes de 06/10/2026 não existem no AMPPE
+- 0 sem telefone — os 11 empossados em 19/11/2026 e os 3 permutantes de 06/10/2026 não existem no AMPPE
   de ago/2026 nem no export de janeiro e entraram pelos overlays de entrada + de contatos
-- 16 sem e-mail (os 11 novos + 3 recém-chegados por permuta, fora do export de janeiro, + os 2 permutantes
+- 17 sem e-mail (os 11 novos + 3 recém-chegados por permuta, fora do export de janeiro, + os 3 permutantes
   de 06/10/2026)
-- entrância: 1ª = 60, 2ª = 129 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
+- entrância: 1ª = 61, 2ª = 129 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
 
 ## Estrutura
 
 ```
 app_template.html      # UI (dados entram pelo marcador __DATA_JSON__)
 build.py               # template + dataset.json -> index.html (+ precache de fotos no sw.js)
-dataset.json           # 467 registros
+dataset.json           # 468 registros
 build_dataset.py       # extrai/cruza as fontes do vault
 posse_2026-11-19.json  # overlay das posses posteriores ao retrato do Quadro
 entradas_2026-10-06_permuta.json # overlay da entrada por permuta nacional (MPMG e MPSE -> MPPE)

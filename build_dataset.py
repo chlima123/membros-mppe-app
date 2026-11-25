@@ -60,12 +60,16 @@ for _ov in OVERLAYS:
 if posses:
     usados = set()
     for p in posses:
+        # Municipio com mais de um cargo vago exige o campo opcional "cargo" na entrada:
+        # sem ele o build pegava o primeiro VAGO do municipio (Petrolândia: 2º PJ em vez do 1º).
         alvo = next((i for i, r in enumerate(quadro)
                      if i not in usados
                      and fold(r.get("municipio")) == fold(p["municipio"])
-                     and norm_name(r.get("promotor")) == "VAGO"), None)
+                     and norm_name(r.get("promotor")) == "VAGO"
+                     and (not p.get("cargo") or fold(r.get("cargo")) == fold(p["cargo"]))), None)
         if alvo is None:
-            sys.exit(f"ERRO overlay: cargo vago nao encontrado em {p['municipio']} para {p['nome']}")
+            sys.exit(f"ERRO overlay: cargo vago nao encontrado em {p['municipio']}"
+                     f"{' (' + p['cargo'] + ')' if p.get('cargo') else ''} para {p['nome']}")
         quadro[alvo] = dict(quadro[alvo], promotor=p["nome"], causa=p.get("causa", "Nomeação"))
         usados.add(alvo)
     print(f"entradas aplicadas (overlay): {len(posses)}")
