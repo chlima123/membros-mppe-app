@@ -124,5 +124,23 @@
   "fonte": "Telefones anotados na Corregedoria (31/08/2026) — número indicado como principal em 25/11/2026",
   "suspeito": false,
   "conferencia": "Corregedoria: linha BIANCA STELLA AZEVEDO BARROSO|1891227|81|98223-0523|celular|2024-08-16; número não repetido em nenhum outro cadastro do dataset nem do catálogo; AMPPE 2026 mantém 81 99911-2315 como alternativa na ficha"
+ },
+ {
+  "id": "larrice-luz-carvalho",
+  "nome": "LARRICE LUZ CARVALHO",
+  "telefone": "031 995555753",
+  "whatsapp": "https://wa.me/5531995555753",
+  "fonte": "Contato informado por Charles (25/11/2026)",
+  "suspeito": false,
+  "conferencia": "entrou no MPPE em 06/10/2026 por permuta nacional, depois do AMPPE 2026 (ago) e do export de e-mails (jan) — não há registro nas duas fontes; número informado pelo titular, sem correspondência em outro cadastro"
+ },
+ {
+  "id": "lucas-ramos-carvalho",
+  "nome": "LUCAS RAMOS CARVALHO",
+  "telefone": "081 996218130",
+  "whatsapp": "https://wa.me/5581996218130",
+  "fonte": "Contato informado por Charles (25/11/2026)",
+  "suspeito": false,
+  "conferencia": "entrou no MPPE em 06/10/2026 por permuta nacional (MPSE), depois do AMPPE 2026 (ago) e do export de e-mails (jan) — não há registro nas duas fontes; número informado diretamente a Charles, sem correspondência em outro cadastro"
  }
 ]

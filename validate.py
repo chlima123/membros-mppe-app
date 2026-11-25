@@ -21,6 +21,21 @@ def check(cond, msg):
     print(("OK   " if cond else "FAIL ") + msg)
 
 
+# 0a. Overlays de entrada: toda entrada declarada tem de existir no dataset COM contato válido.
+# Gate de regressão: se o overlay perder efeito (cargo não preenchido, contato não aplicado),
+# o membro some do app ou fica sem telefone — e isto acusa.
+import glob
+for _ov in sorted(glob.glob(f"{ROOT}/posse_*.json") + glob.glob(f"{ROOT}/entradas_*.json")):
+    for e in json.load(open(_ov, encoding="utf-8")):
+        r = next((d for d in data if d["nome"] == e["nome"]), None) or {}
+        check(r.get("promotoria") == e["municipio"],
+              f"overlay {os.path.basename(_ov)}: {e['nome']} no dataset ({e['municipio']})")
+        check(bool(re.fullmatch(r"0\d{2} \d{8,9}", r.get("telefone") or "")),
+              f"  telefone no padrão 0DDD numero: {r.get('telefone')!r}")
+        check((r.get("whatsapp") or "").startswith("https://wa.me/55"),
+              f"  wa.me com DDI 55: {r.get('whatsapp')!r}")
+
+
 with sync_playwright() as p:
     browser = p.chromium.launch()
     ctx = browser.new_context(

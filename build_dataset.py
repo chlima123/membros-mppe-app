@@ -42,13 +42,22 @@ if not m:
 quadro = json.loads(m.group(1))
 print(f"quadro registros: {len(quadro)}")
 
-# ---------- 1b. Posses posteriores ao snapshot do Quadro ----------
-# Quem tomou posse depois da captura oficial do Quadro Geral (18/11/2026) nao aparece
-# nas telas baixadas. O overlay preenche o cargo que estava VAGO no municipio.
-# Fonte: DOE MPPE de 19/11/2026, pp. 6-8 (portarias PGJ 3.947 a 3.957/2026).
-POSSE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "posse_2026-11-19.json")
-if os.path.exists(POSSE):
-    posses = json.load(open(POSSE, encoding="utf-8"))
+# ---------- 1b. Entradas posteriores (ou nao refletidas) no snapshot do Quadro ----------
+# Quem tomou posse depois da captura oficial do Quadro Geral (18/11/2026) nao aparece nas telas
+# baixadas; e quem entrou por permuta nacional pode ter deixado o cargo como VAGO na captura.
+# O overlay preenche o cargo VAGO do municipio indicado.
+#   posse_2026-11-19.json          -- DOE MPPE de 19/11/2026 (portarias PGJ 3.947 a 3.957/2026)
+#   entradas_2026-10-06_permuta.json -- permuta nacional MPMG->MPPE (Portaria PGJ 3.357/2026)
+BASE = os.path.dirname(os.path.abspath(__file__))
+OVERLAYS = [os.path.join(BASE, f) for f in ("posse_2026-11-19.json",
+                                            "entradas_2026-10-06_permuta.json")
+            if os.path.exists(os.path.join(BASE, f))]
+posses = []
+for _ov in OVERLAYS:
+    _lista = json.load(open(_ov, encoding="utf-8"))
+    posses += _lista
+    print(f"overlay {os.path.basename(_ov)}: {len(_lista)} entradas")
+if posses:
     usados = set()
     for p in posses:
         alvo = next((i for i, r in enumerate(quadro)
@@ -57,12 +66,11 @@ if os.path.exists(POSSE):
                      and norm_name(r.get("promotor")) == "VAGO"), None)
         if alvo is None:
             sys.exit(f"ERRO overlay: cargo vago nao encontrado em {p['municipio']} para {p['nome']}")
-        quadro[alvo] = dict(quadro[alvo], promotor=p["nome"], causa="Nomeação")
+        quadro[alvo] = dict(quadro[alvo], promotor=p["nome"], causa=p.get("causa", "Nomeação"))
         usados.add(alvo)
-    print(f"posses aplicadas (overlay): {len(posses)}")
+    print(f"entradas aplicadas (overlay): {len(posses)}")
 else:
-    posses = []
-    print(f"aviso: overlay de posse ausente ({POSSE})")
+    print(f"aviso: nenhum overlay de entrada encontrado em {BASE}")
 
 # Quem empossou agora nao consta do AMPPE (ago/2026) nem do export de e-mails (jan/2026):
 # tentar casar por nome so gera homonimo falso. Ficam sem contato ate a fonte oficial trazer.

@@ -10,7 +10,7 @@ telefone com link de WhatsApp, e-mail, foto do acervo (quando existe) e foto 3×
 
 ## Dados
 
-`dataset.json` — **465 membros** (79 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
+`dataset.json` — **467 membros** (77 cargos vagos excluídos), cruzando quatro fontes do vault `chlima123`:
 
 | Campo | Fonte |
 |---|---|
@@ -21,10 +21,14 @@ telefone com link de WhatsApp, e-mail, foto do acervo (quando existe) e foto 3×
 | `foto` | acervo Bublup + caderno do Evernote — `fotos/<id>.jpg` |
 
 `build_dataset.py` reconstrói o `dataset.json` a partir das fontes (roda no Mac, com o vault montado).
-Quem tomou posse **depois** do retrato do Quadro entra pelo overlay `posse_AAAA-MM-DD.json` (nome +
-comarca; o build preenche o cargo que estava VAGO e falha se não houver vaga, em vez de inventar
-registro). Hoje: `posse_2026-11-19.json` — 11 promotores de 1ª Entrância (Portarias PGJ 3.947 a
-3.957/2026, DOE de 19/11/2026).
+Quem tomou posse **depois** do retrato do Quadro — ou entrou por permuta nacional e deixou o cargo como
+VAGO na captura — entra por um overlay de entrada (nome + comarca + `causa`; o build preenche o cargo
+que estava VAGO e falha se não houver vaga, em vez de inventar registro). Hoje:
+
+- `posse_2026-11-19.json` — 11 promotores de 1ª Entrância (Portarias PGJ 3.947 a 3.957/2026, DOE de 19/11/2026);
+- `entradas_2026-10-06_permuta.json` — permutas nacionais com efeitos em 06/10/2026: Larrice Luz Carvalho,
+  MPMG→MPPE, 2ª PJ de Defesa da Cidadania de Garanhuns (Portaria PGJ 3.357/2026) e Lucas Ramos Carvalho,
+  MPSE→MPPE, 1ª PJ de Floresta (Portaria PGJ 3.356/2026).
 `build.py` embute o JSON em `index.html` a partir de `app_template.html` e, no mesmo passo,
 regenera a lista de fotos precacheadas no `sw.js`.
 
@@ -62,25 +66,27 @@ para o placeholder (nada de imagem quebrada).
 
 ## Cobertura verificada
 
-- 465 membros (não 544 cargos: 79 estão vagos)
-- 465 com telefone; 465 com link de WhatsApp; 451 com e-mail
+- 467 membros (não 544 cargos: 77 estão vagos)
+- 467 com telefone; 467 com link de WhatsApp; 451 com e-mail
 - 41 com foto do acervo (9 do Bublup + 32 do caderno do Evernote); os demais mostram as iniciais no avatar
 - 7 telefones marcados **não confirmados** (6 com número repetido em mais de um cadastro na fonte +
   1 empossado cuja atribuição do contato é só pela contagem da lista)
-- 0 sem telefone e sem e-mail — os 11 empossados em 19/11/2026, que não existem no AMPPE de ago/2026 nem
-  no export de janeiro, entraram pelo overlay de contatos
-- 14 sem e-mail (os 11 novos + 3 recém-chegados por permuta, fora do export de janeiro)
-- entrância: 1ª = 59, 2ª = 129, 3ª = 222, 2ª Instância = 55
+- 0 sem telefone — os 11 empossados em 19/11/2026 e os 2 permutantes de 06/10/2026 não existem no AMPPE
+  de ago/2026 nem no export de janeiro e entraram pelos overlays de entrada + de contatos
+- 16 sem e-mail (os 11 novos + 3 recém-chegados por permuta, fora do export de janeiro, + os 2 permutantes
+  de 06/10/2026)
+- entrância: 1ª = 60, 2ª = 129 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
 
 ## Estrutura
 
 ```
 app_template.html      # UI (dados entram pelo marcador __DATA_JSON__)
 build.py               # template + dataset.json -> index.html (+ precache de fotos no sw.js)
-dataset.json           # 465 registros
+dataset.json           # 467 registros
 build_dataset.py       # extrai/cruza as fontes do vault
 posse_2026-11-19.json  # overlay das posses posteriores ao retrato do Quadro
-contatos_2026-11-24.json # overlay de contato/matrícula por id (empossados fora do AMPPE/export)
+entradas_2026-10-06_permuta.json # overlay da entrada por permuta nacional (MPMG e MPSE -> MPPE)
+contatos_2026-11-24.json # overlay de contato/matrícula por id (quem está fora do AMPPE/export)
 tools/fotos_build.py   # fotos do acervo (Bublup + Evernote) -> fotos/ + campo `foto`
 fotos/                 # 41 fotos 400x400 (avatar e ficha)
 index.html             # app publicado (gerado)
