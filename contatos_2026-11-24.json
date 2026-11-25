@@ -115,5 +115,14 @@
   "matricula": "1907603",
   "fonte": "Telefones anotados na Corregedoria (31/08/2026) — matrícula",
   "conferencia": "matrícula 1907603 na linha 389 da lista da Corregedoria e na linha 377 do export de e-mails do diretório; telefone/e-mail do build conferidos e mantidos"
+ },
+ {
+  "id": "bianca-stella-azevedo-barroso",
+  "nome": "BIANCA STELLA AZEVEDO BARROSO",
+  "telefone": "081 982230523",
+  "whatsapp": "https://wa.me/5581982230523",
+  "fonte": "Telefones anotados na Corregedoria (31/08/2026) — número indicado como principal em 25/11/2026",
+  "suspeito": false,
+  "conferencia": "Corregedoria: linha BIANCA STELLA AZEVEDO BARROSO|1891227|81|98223-0523|celular|2024-08-16; número não repetido em nenhum outro cadastro do dataset nem do catálogo; AMPPE 2026 mantém 81 99911-2315 como alternativa na ficha"
  }
 ]
