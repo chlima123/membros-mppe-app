@@ -75,6 +75,10 @@ para o placeholder (nada de imagem quebrada).
   não consta do AMPPE de ago/2026, da Corregedoria (31/08/2026), do export de janeiro nem dos Contatos Google;
   os 11 empossados em 19/11/2026 e os demais permutantes entraram pelos overlays de entrada + de contatos
 - 19 sem e-mail (os 11 novos + os recém-chegados por permuta, fora do export de janeiro)
+- 1 link de WhatsApp em grafia divergente do telefone (ANA JOEMIA MARQUES DA ROCHA): o telefone exibido é
+  o do cadastro (`081 999768606`), mas a conta de WhatsApp dela está registrada na forma antiga de 8 dígitos
+  (`+55 81 9976-8606`) — o link com os 9 dígitos abria o alerta "este número não está no WhatsApp". A ficha
+  do app mostra a ressalva "Conversa no WhatsApp na conta +55 81 9976-8606".
 - entrância: 1ª = 61, 2ª = 131 (+1 registro grafado "2º" na fonte), 3ª = 222, 2ª Instância = 55
 
 ## Estrutura

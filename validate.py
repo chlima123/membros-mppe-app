@@ -192,8 +192,16 @@ with sync_playwright() as p:
         fails.append("FAIL caixa de foto sem geometria")
 
     wa = page.get_attribute("#btn-whatsapp", "href") or ""
-    esperado_wa = "wa.me/55" + re.sub(r"\D", "", primeiro["telefone"])
-    check(re.sub(r"\D", "", wa)[-11:] == re.sub(r"\D", "", esperado_wa)[-11:], f"href WhatsApp = {wa}")
+    tel_dig = re.sub(r"\D", "", primeiro["telefone"]).lstrip("0")
+    if primeiro.get("whatsappDivergente"):
+        # Conta de WhatsApp na grafia ANTIGA (8 digitos, sem o nono): o link traz DDD + assinante
+        # de 8 digitos (81 99976-8606 -> 55 81 9976-8606), porque a de 9 digitos nao existe la.
+        esperado_wa = "55" + tel_dig[:2] + tel_dig[3:]
+        check(re.sub(r"\D", "", wa) == esperado_wa,
+              f"href WhatsApp na grafia da conta ({wa}) — esperado {esperado_wa}")
+    else:
+        esperado_wa = "wa.me/55" + re.sub(r"\D", "", primeiro["telefone"])
+        check(re.sub(r"\D", "", wa)[-11:] == re.sub(r"\D", "", esperado_wa)[-11:], f"href WhatsApp = {wa}")
 
     # 5b-bis. Desktop: wa.me abre a WEB; o app do macOS so registra o esquema whatsapp:
     # (regressao 23/11/2026: o botao levava so a api.whatsapp.com e nao abria o WhatsApp desktop)
@@ -224,7 +232,21 @@ with sync_playwright() as p:
     page_desk.locator("#list-container .member-row").first.click()
     page_desk.wait_for_timeout(500)
     wa_ana = page_desk.get_attribute("#btn-whatsapp", "href") or ""
-    check(wa_ana == "https://wa.me/5581999768606", f"Ana Joemia: href do botao = {wa_ana}")
+    check(wa_ana == "https://wa.me/558199768606", f"Ana Joemia: href do botao = {wa_ana}")
+    # regressao 25/11/2026: o link com a grafia de 9 digitos (5581999768606) abria o alerta
+    # "este numero nao esta no WhatsApp"; a conta dela esta registrada em 55 81 9976-8606.
+    ana = next((x for x in data if x.get("id") == "ana-joemia-marques-da-rocha"), None)
+    check(bool(ana) and ana.get("whatsappDivergente") is True,
+          "Ana Joemia: overlay de WhatsApp na grafia antiga aplicado no dataset")
+    tel_ana = (page_desk.inner_text("#sheet-phone-text") or "").strip()
+    check(tel_ana == "081 999768606", f"Ana Joemia: telefone exibido segue o cadastro ({tel_ana!r})")
+    try:
+        nota_ana = (page_desk.inner_text("#sheet-phone-wa-note") or "").strip()
+        nota_visivel = page_desk.is_visible("#sheet-phone-wa-note")
+    except Exception:
+        nota_ana, nota_visivel = "", False
+    check(nota_visivel and "+55 81 9976-8606" in nota_ana,
+          f"Ana Joemia: nota com a conta de WhatsApp ({nota_ana!r}, visivel={nota_visivel})")
     page_desk.evaluate(
         "() => { window.__waOpen = []; window.open = function (u) { window.__waOpen.push(String(u)); return null; }; }"
     )
@@ -234,7 +256,7 @@ with sync_playwright() as p:
     check(page_desk.url == url_antes, "clique no desktop nao joga a pagina direto para o wa.me")
     page_desk.wait_for_timeout(1400)
     abertos = page_desk.evaluate("() => window.__waOpen")
-    check(abertos == ["https://wa.me/5581999768606"],
+    check(abertos == ["https://wa.me/558199768606"],
           f"app ausente -> fallback abre o wa.me ({abertos})")
     ctx_desk.close()
 

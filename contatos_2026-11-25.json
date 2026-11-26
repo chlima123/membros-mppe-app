@@ -161,5 +161,13 @@
   "fonte": "Ficha do vault (contato obtido na 8ª Sessão Extraordinária de Permutas Nacionais do CSMP)",
   "suspeito": false,
   "conferencia": "entrou no MPPE em 17/08/2026 por permuta nacional (MPBA), depois do AMPPE 2026 (ago) e dos telefones da Corregedoria (31/08/2026); número DDD 71 (BA) registrado na ficha ao lado dos dados da permuta; matrícula 1910167 consta do Edital de Remoção 0017/2026 do CSMP"
+ },
+ {
+  "id": "ana-joemia-marques-da-rocha",
+  "nome": "ANA JOEMIA MARQUES DA ROCHA",
+  "whatsapp": "https://wa.me/558199768606",
+  "fonte": "AMPPE 2026 (telefone exibido) + conta de WhatsApp verificada na sessão do WhatsApp Desktop em 25/11/2026",
+  "suspeito": false,
+  "conferencia": "a conta de WhatsApp dela está registrada na grafia ANTIGA de 8 dígitos (81 9976-8606, JID 558199768606): o link com a grafia de 9 dígitos (81 99976-8606) abre o alerta 'número não está no WhatsApp'. O telefone exibido continua 081 999768606, que é o número do cadastro AMPPE/Corregedoria e o que se disca"
  }
 ]

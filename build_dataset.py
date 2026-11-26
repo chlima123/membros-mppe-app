@@ -365,7 +365,7 @@ if os.path.exists(CONTATOS):
         r = por_id.get(c.get("id"))
         if r is None:
             sys.exit(f"ERRO contatos: id inexistente no dataset: {c.get('id')}")
-        if not any(c.get(k) for k in ("telefone", "email", "matricula")):
+        if not any(c.get(k) for k in ("telefone", "whatsapp", "email", "matricula")):
             continue
         if c.get("telefone"):
             dig = re.sub(r"\D", "", c["telefone"])
@@ -373,6 +373,13 @@ if os.path.exists(CONTATOS):
             r["whatsapp"] = c.get("whatsapp") or f"https://wa.me/55{dig.lstrip('0')}"
             r["fonteTelefone"] = c.get("fonte", "contato manual")
             r["telefoneSuspeito"] = bool(c.get("suspeito", False))
+        elif c.get("whatsapp"):
+            # WhatsApp da conta pode estar numa grafia diferente do telefone exibido:
+            # conta antiga registrada antes do nono dígito (81 9976-8606 × 81 99976-8606).
+            # O telefone exibido continua o do cadastro (é o número que se disca); o link
+            # aponta para a grafia que o WhatsApp reconhece.
+            r["whatsapp"] = c["whatsapp"]
+            r["whatsappDivergente"] = True
         if c.get("email"):
             r["email"] = c["email"]
         if c.get("matricula"):

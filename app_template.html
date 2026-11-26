@@ -988,6 +988,13 @@
       gap: 8px;
     }
 
+    .phone-wa-note {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--text-secondary);
+    }
+
     .btn-action {
       appearance: none;
       text-decoration: none;
@@ -1552,6 +1559,7 @@
                   <span>Copiar número</span>
                 </button>
               </div>
+              <p class="phone-wa-note" id="sheet-phone-wa-note" hidden></p>
             </div>
             <p class="muted-empty" id="sheet-phone-empty" hidden>sem telefone no cadastro</p>
           </div>
@@ -1647,6 +1655,18 @@ const DATA = __DATA_JSON__;
     const digits = phoneDigits(phone);
     if (!digits) return '';
     return 'tel:' + (digits.length <= 11 ? '+55' + digits : '+' + digits);
+  }
+
+  // Numero da CONTA de WhatsApp quando ela difere do telefone exibido: conta antiga
+  // registrada antes do nono digito (81 9976-8606) enquanto o cadastro traz
+  // 81 99976-8606. Formata como +55 DD NNNN-NNNN ou +55 DD NNNNN-NNNN.
+  function formatWaAccount(wa) {
+    const digits = phoneDigits(wa);
+    if (digits.length < 10) return '';
+    const ddd = digits.slice(0, 2);
+    const sub = digits.slice(2);
+    const cut = sub.length - 4;
+    return '+55 ' + ddd + ' ' + sub.slice(0, cut) + '-' + sub.slice(cut);
   }
 
   // --- WhatsApp: wa.me abre a WEB; o app desktop do macOS so registra o esquema whats: ---
@@ -1881,6 +1901,7 @@ const DATA = __DATA_JSON__;
   const sheetPhoneContent = document.getElementById('sheet-phone-content');
   const sheetPhoneText = document.getElementById('sheet-phone-text');
   const sheetPhoneSuspect = document.getElementById('sheet-phone-suspect');
+  const sheetPhoneWaNote = document.getElementById('sheet-phone-wa-note');
   const btnWhatsapp = document.getElementById('btn-whatsapp');
   const btnCall = document.getElementById('btn-call');
   const btnCopyPhone = document.getElementById('btn-copy-phone');
@@ -2445,9 +2466,19 @@ const DATA = __DATA_JSON__;
       if (wa) {
         btnWhatsapp.href = wa;
         btnWhatsapp.hidden = false;
+        const contaWa = phoneDigits(wa);
+        if (contaWa && contaWa !== phoneDigits(phone)) {
+          sheetPhoneWaNote.textContent = 'Conversa no WhatsApp na conta ' + formatWaAccount(wa) + '.';
+          sheetPhoneWaNote.hidden = false;
+        } else {
+          sheetPhoneWaNote.textContent = '';
+          sheetPhoneWaNote.hidden = true;
+        }
       } else {
         btnWhatsapp.removeAttribute('href');
         btnWhatsapp.hidden = true;
+        sheetPhoneWaNote.textContent = '';
+        sheetPhoneWaNote.hidden = true;
       }
       sheetPhoneContent.hidden = false;
       sheetPhoneEmpty.hidden = true;
